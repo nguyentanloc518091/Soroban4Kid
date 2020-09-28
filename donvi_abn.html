@@ -1,0 +1,454 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="referrer" content="no-referrer">
+        <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+        <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
+        <script src="script.js"></script>
+        <script src="js/level2.js"></script>
+        <script src="js/jquery.fireworks.js"></script>
+        <script>
+            
+            $(document).ready(function(){
+                
+                var ViewModel = function(first, last) {
+                    var self = this;
+
+                    this.allItems = ko.observableArray([
+                        "Fries", 
+                        "Eggs Benedict", 
+                        "Ham", 
+                        "Cheese"
+                    ]); // Initial items
+
+                    this.lblSubject = ko.observable("2 SỐ - KHÔNG HẾT HỢP");
+
+                    this.isSetting = ko.observable(true);
+                    this.number_temp = ko.observableArray();
+                    var random_color =  ko.observableArray(['#fcba03', '#ff3700', '#a2ff00', '#00d154', '#377a52', '#366075', '#1b4357', '#6b7c85', '#23346b', '#2e4ba6', '#6d1bbf']);
+                    this.image_loading =  ko.observable();
+
+                    this.colorText = ko.observable("black");
+
+                    this.timer = ko.observable(3);
+                    this.numberrange = ko.observable(10);
+                    this.level = ko.observable(0);
+
+                    this.soroban = ko.observable();
+                    this.isLoading = ko.observable(true);
+                    this.isLastNumber = ko.observable(false);
+                    var interval_timer = null;
+                    this.sentence = ko.observable(0);
+
+                    this.mute = ko.observable(false);
+
+                    this.tick = function() {
+                        console.log("tick")
+                        self.colorText(random_color()[generateRandomInteger(0, 10)]);
+                        var firstElement = self.number_temp.shift();
+                        if(self.number_temp().length >= 0 && !!firstElement){
+                            
+                            if(!!firstElement){
+                                self.sentence(self.sentence() + 1);
+								readtts(firstElement, self.mute());
+                                self.soroban(firstElement)
+                            }else{
+                                self.isLastNumber(true);
+                                clearInterval(interval_timer);
+                            }
+                            
+                        } else {
+                            self.isLastNumber(true);
+                            clearInterval(interval_timer);
+                        }
+
+                        if(self.number_temp().length == 0){
+                            self.isLastNumber(true);
+                            clearInterval(interval_timer);
+                        }
+
+                        if(self.timers() == "0"){
+                            var startTime = Date.now();
+                            timerFinal = setInterval(function() {
+                                var elapsedTime = Date.now() - startTime;
+                                self.timers((elapsedTime / 1000).toFixed(3));
+                            }, 2000);
+                        }
+                    };
+
+                    var isResult = false;
+                    var fireworksField = null;
+                    this.onResultAll = function(){
+                        if(self.isLastNumber() && !isResult){
+                            self.soroban(final_number);
+
+                            readtts("Bằng " + final_number, self.mute());
+                            // if(final_number == 1){
+                            //     readtts("không hạt trên, một hạt dưới", self.mute());
+                            // }else if(final_number == 2){
+                            //     readtts("không hạt trên, hai hạt dưới", self.mute());
+                            // }else if(final_number == 3){
+                            //     readtts("không hạt trên, ba hạt dưới", self.mute());
+                            // }else if(final_number == 4){
+                            //     readtts("không hạt trên, bốn hạt dưới", self.mute());
+                            // }else if(final_number == 5){
+                            //     readtts("một hạt trên, không hạt dưới", self.mute());
+                            // }else if(final_number == 6){
+                            //     readtts("một hạt trên, một hạt dưới", self.mute());
+                            // }else if(final_number == 7){
+                            //     readtts("một hạt trên, hai hạt dưới", self.mute());
+                            // }else if(final_number == 8){
+                            //     readtts("một hạt trên, ba hạt dưới", self.mute());
+                            // }else if(final_number == 9){
+                            //     readtts("một hạt trên, bốn hạt dưới", self.mute());
+                            // }else{
+                            //     readtts(final_number, self.mute());
+                            // }
+							
+								
+                            clearInterval(timerFinal);
+                            isResult = true;
+                            runtimer = setTimeout(function(){
+
+                                readtts('Đăng Khôi hãy cố gắng lên nào, mình sắp về đích rồi', false);
+
+                                // fireworksField = $('.notloading').fireworks({
+                                //     sound:true,// sound effect
+                                //     opacity: 0.9,
+                                //     width:'100%',
+                                //     height:'100%'
+                                // });
+
+                                
+                                // setTimeout(function(){
+                                //     $('#fireworksField').on("click", function(){
+                                //         fireworksField.destroy()
+                                //         $(this).remove();
+                                //     })
+                                // }, 1000)
+                            }, 2500)
+                            
+
+                        }
+                    }
+
+                    var timerFinal = null;
+                    var runtimer = null;
+                    var startTick = null;
+                    var soudStart = null;
+                    this.timers = ko.observable("0");
+                    
+
+                    this.level.subscribe(function (level) {
+                        var message = "2 SỐ - KHÔNG HẾT HỢP";
+                        if(level == 0){
+                            message = "2 SỐ - KHÔNG HẾT HỢP";
+                        } else if(level == 1){
+                            message = "3 SỐ - KHÔNG HẾT HỢP";
+                        } else if(level == 2){
+                            message = "4 SỐ - KHÔNG HẾT HỢP";     
+                        } else if(level == 3){
+                            message = "2 SỐ - ANH BẠN NHỎ";
+                        } else if(level == 4){
+                            message = "3 SỐ - ANH BẠN NHỎ";
+                        }else if(level == 5){
+                            message = "4 SỐ - ANH BẠN NHỎ";
+                        }
+                        self.lblSubject(message);
+                    });
+
+                    
+
+                    var final_number = 0;
+                    this.onViewResult = function(){
+                        //reset
+                        self.isSetting(false);
+                        self.isLoading(true);
+                        self.isLastNumber(false);
+                        self.timers("0");
+                        self.sentence(0);
+                        isResult = false;
+                        self.number_temp.removeAll();
+
+                        self.image_loading("img/img"+generateRandomInteger(1, 31) + ".gif");
+
+                        var results = randSorobanlevel1B(self.numberrange());
+                        if(self.level() == 0){
+                            self.lblSubject("2 SỐ - KHÔNG HẾT HỢP");
+                            result = randSorobanlevel1B(self.numberrange())
+                        }else if(self.level() == 1){
+                            self.lblSubject("3 SỐ - KHÔNG HẾT HỢP");
+                            results = randSorobanlevel1C(self.numberrange());
+                        }else if(self.level() == 2){
+                            self.lblSubject("4 SỐ - KHÔNG HẾT HỢP");
+                            results = randSorobanlevel1D(self.numberrange());
+                        }else if(self.level() == 3){
+                            self.lblSubject("2 SỐ - ANH BẠN NHỎ");
+                            results = randSorobanlevel2B_(self.numberrange(), 20);
+                        }else if(self.level() == 4){
+                            results = randSorobanlevel2C_(self.numberrange(), 50);
+                        }else if(self.level() == 5){
+                            results = randSorobanlevel1D_(self.numberrange(), 70);
+                        }else if(self.level() == 6){
+                            results = randSoroban22(self.numberrange(), 99);
+                        }else if(self.level() == 7){
+                            results = randSoroban33(self.numberrange(), 99);
+                        }else if(self.level() == 8){
+                            results = randSoroban44(self.numberrange(), 99);
+                        }
+                       
+                        console.log(results)
+                        for(var i = 0 ; i< results.numbers.length; i++){
+                            self.number_temp.push((results.numbers[i]>0? "+":"") + results.numbers[i]);
+                        }
+
+                        self.number_temp.push("=?");
+                        final_number = results.s;
+						
+                                
+                        clearInterval(interval_timer);
+                        clearInterval(runtimer);
+                        clearInterval(timerFinal);
+                        clearInterval(startTick);
+                        clearInterval(soudStart);
+
+                        soudStart = setTimeout(function(){
+                            readtts('Đăng khôi hãy tập trung nào', false);
+                        }, 400);
+                        startTick = setTimeout(function(){
+                            self.isLoading(false);
+                            self.tick();
+                            interval_timer = setInterval(self.tick, self.timer() * 1000 -  700)
+                        }, 4000);
+                        
+                    }
+
+                    this.backgroundblack = ko.observable(true);
+                    this.onEventBackground = function(){
+                        if(self.backgroundblack()){
+                            $("[data-role='page'], .ui-slider-track .ui-btn.ui-slider-handle").css({
+                                'background-color': '#4a4845',
+                                'color': 'white'
+                            })
+                        }else{
+                            $("[data-role='page'], .ui-slider-track .ui-btn.ui-slider-handle").css({
+                                'background-color': 'white',
+                                'color': 'black'
+                            })
+                        }
+                    }
+                    this.onViewBack = function(){
+                        self.isSetting(true);
+                        if(fireworksField != null){
+                            fireworksField.destroy()
+                        }
+
+                        clearInterval(interval_timer);
+                        clearInterval(runtimer);
+                        clearInterval(timerFinal);
+                        clearInterval(startTick);
+
+                        audiotts.pause();
+                        
+                    }
+
+                    
+                    
+
+                    var length = 2;
+                    var index = 0;
+
+                    var excersize = false;
+                    var ketqua = [];
+                    for(var i = 0 ; i <100; i++){
+
+                        var inte = generateRandomInteger(1, 9);  
+                        result = randSorobanlevel2B_(length, 20)
+                        console.log(result)
+                        if((result.numbers.length) == length){
+                            var str = "" +(index + 1);
+                            var pad = "000"
+
+                            if(excersize){
+                                var ans = pad.substring(0, pad.length - str.length) + str
+                                var template = "<div>" + (ans) + "." + result.numbers.join(" ") + " = ..................... </div>"
+                                if(index%2 == 0){
+                                    template = "<div><b><i><u>" + (ans) + "." + result.numbers.join(" ") + " = </u></i></b> ..................... </div>"
+                                }
+                                ketqua[index] = result.s;
+                                index++;
+                            } else {
+                                var ans = pad.substring(0, pad.length - str.length) + str
+                                var template = "<div>" + (ans) + "." + result.numbers.join(" ") + " = " + result.s + "</div>"
+                                if(index%2 == 0){
+                                    template = "<div><b><i><u>" + (ans) + "." + result.numbers.join(" ") + " = " + result.s + "</u></i></b></div>"
+                                }
+                                index++;
+                            }
+                            
+                            $(".result").append(template);
+                        }
+
+                        console.log("55555", i);
+                    }
+
+                    if(excersize){
+                        for(var i = 0 ; i < ketqua.length; i++){
+                            var str = "" +(i + 1);
+                            var pad = "000";
+                            var ans = pad.substring(0, pad.length - str.length) + str
+                            var template = "<div>" + (ans) + ". " + ketqua[i] +" </div>";
+                            $(".result").append(template);
+
+                        }
+                    }
+                    
+                   
+
+                };
+
+                ko.applyBindings(new ViewModel()); // This makes Knockout get to work
+            })
+            
+			
+            
+        </script>
+		
+        <style>
+            body{
+                background-color: white !important;
+                /* color: white; */
+            }
+
+            [data-role='page']{
+                background-color:white !important ;
+                /* color: white; */
+            }
+
+            .show{
+                display: block;
+            }
+
+            .hide{
+                display: none;
+            } 
+
+            h1{
+                text-align: center;
+                font-size: 268px;
+            }
+
+            h1.red{
+                font-size: 240px;
+                font-weight: bold;
+                color: red !important;
+                margin-top: 48px;
+            }
+
+            @media (orientation: landscape) {
+                .loading{
+                    text-align: center;
+                }
+
+                .loading > img {
+                    max-height: 288px !important;
+                }
+
+                h1{
+                    margin: 0px;
+                }
+                
+            }
+
+            /* .ui-slider-track .ui-btn.ui-slider-handle{
+                background-color: black !important;
+            } */
+
+ 
+        </style>
+    </head>
+    <body>
+        <!-- <div class="result">
+
+        </div> -->
+        <div class="ui-grid-solo" data-bind="css: { 'show' : isSetting(), 'hide' : !isSetting()}">
+            <div class="ui-grid-a">
+                    <label for="slider-1">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer"  step=".1" min="1" max="6" value="3" data-bind="value: timer"/>
+            </div>
+            <div class="ui-grid-a">
+                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="30" value="10" data-bind="value: numberrange, valueUpdate: 'input'"/>
+            </div>
+            <div class="ui-grid-a">
+                   <label for="slider-2">level:</label><input type="range" name="numberrange" id="numberrange" min="0" max="8" value="0" data-bind="value: level"/>
+            </div>
+            <div class="ui-grid-a">
+                   <label for="slider-2" data-bind="text: lblSubject"></label>
+            </div>
+            <div  class="ui-grid-a">
+                <div class="ui-block-a">
+                     <label>
+                        <input type="checkbox" name="checkbox-0 " data-bind="checked: mute" >âm thanh
+                    </label>
+                </div>
+                <div>
+                     <label>
+                        <input type="checkbox" name="checkbox-0 " data-bind="checked: backgroundblack, click: onEventBackground" > Màu đen
+                    </label>
+                </div>
+                
+            </div>
+            <div class="ui-grid-a">
+                <button class="ui-btn" class="OK" data-bind="click:onViewResult ">Tạo Soroban</button>
+            </div>
+            <div class="ui-block-a">
+                <a href="index.html" rel="external" class="ui-shadow ui-btn ui-corner-all">Quay về</a>
+            </div>
+            <div class="ui-block-a">
+                <button class="ui-btn" class="OK" data-bind="click:onViewBack ">Copyright@ ĐĂNG KHÔI</button>
+            </div>
+        </div>
+        <div data-bind="css: { 'show' : !isSetting(), 'hide' : isSetting()}">
+            <div class="ui-grid-b" style="position: fixed;width: 100%;z-index: 99999;" >
+                <div class="ui-block-a">
+                    <button class="ui-btn" class="OK" data-bind="click:onViewBack ">Quay về</button>
+                </div>
+                <div class="ui-block-b">
+                    <button class="ui-btn" class="OK" data-bind="click:onViewResult ">Reset</button>
+                </div>
+                <div class="ui-block-b">
+                    <button class="ui-btn" class="OK" data-bind="text: timers() + 's'">Pause</button>
+                </div>
+            </div>
+            
+            <div class="ui-grid-a" style="position: fixed;top: 18px;left: 14px; z-index: 2;">
+                <h5 style="font-size: 27px;" data-bind="text: sentence() + '/' + numberrange()"></h5>
+            </div>
+
+            <!-- ko if: isLoading() -->
+            <div class="loading">
+                <img style="padding-top: 65px;max-height: 300px;min-height: 150px;" data-bind="attr: {'src': image_loading}"/>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: !isLoading() -->
+            <div class="notloading">
+                <div class="ui-grid-a">
+                    <h1 data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll"></h1>
+                </div>
+                <!-- ko if: isLastNumber() -->
+                
+                <!-- /ko -->
+                
+            </div>
+            <!-- /ko -->
+            
+            
+
+            
+            
+        </div>
+        
+    </body>
+</html>

@@ -1,0 +1,148 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="referrer" content="no-referrer">
+        <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+        <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
+        <script src="js/memory.js"></script>
+        <script src="js/jquery.fireworks.js"></script>
+        <script>
+            
+            $(document).ready(function(){
+                
+                function generateRandomInteger(min, max) {
+                    return Math.floor(min + Math.random()*(max + 1 - min))
+                }
+
+                function GenerateNumber(number, length = 1){
+                    var data = [];
+
+                    for(var i = 0 ; i< number; i++){
+                        if(length == 1){
+                            data[i] = generateRandomInteger(-9, 9);
+                        }else if(length == 2){
+                            data[i] = generateRandomInteger(-99, 99);
+                        }else if(length == 3){
+                            data[i] = generateRandomInteger(-999, 999);
+                        }
+                    }
+                    console.log(data);
+                    return data;
+                }
+
+
+                
+                var ViewModel = function(first, last) {
+                    var self = this;
+
+                    this.allItems = ko.observableArray([
+                        "Fries", 
+                        "Eggs Benedict", 
+                        "Ham", 
+                        "Cheese"
+                    ]); // Initial items
+                    this.isSetting = ko.observable(true);
+                    this.number_temp = ko.observableArray();
+                    var random_color =  ko.observableArray(['#fcba03', '#ff3700', '#a2ff00', '#00d154', '#377a52', '#366075', '#1b4357', '#6b7c85', '#23346b', '#2e4ba6', '#6d1bbf']);
+                    this.image_loading =  ko.observable();
+                    this.colorText = ko.observable("black");
+                    this.timer = ko.observable(3);
+                    this.numberrange = ko.observable(10);
+                    this.level = ko.observable(0);
+                    this.soroban = ko.observable();
+                    this.isLoading = ko.observable(true);
+                    this.isLastNumber = ko.observable(false);
+                    var interval_timer = null;
+                    this.sentence = ko.observable(0);
+                    this.mute = ko.observable(false);
+                    this.txtsoroban  = ko.observable("")
+                    this.label = ko.observable("");
+
+                    this.onViewResult  = function(){
+
+                    }
+
+                    this.onViewBack  = function(){
+                        
+                    }
+
+                    this.onResultAll = function(){
+
+                    }
+
+
+
+                    var numberRandoms = GenerateNumber(5);
+                    console.log(numberRandoms[0]);
+
+                    var i = 0;
+                    while(i< numberRandoms.length){
+                        
+                        setTimeout(function(){
+                            self.label(numberRandoms[i]);
+                            console.log(numberRandoms[i])
+                        }, 1000 * (i + 1))
+
+                        i++;
+                    }
+
+
+                };
+
+                ko.applyBindings(new ViewModel()); // This makes Knockout get to work
+            })
+            
+			
+            
+        </script>
+		
+        <style>
+            body{
+				background: #bbb !important;
+			}
+        </style>
+    </head>
+    <body>
+        <div class="result" data-bind="text: label">
+
+        </div>
+        <div class="ui-grid-solo" data-bind="css: { 'show' : isSetting(), 'hide' : !isSetting()}">
+            <div class="ui-grid-a">
+                    <label for="slider-1" data-bind="text: label">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer" min="1" max="15" value="2" data-bind="value: timer"/>
+            </div>
+            <div class="ui-grid-a">
+                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="50" value="3" data-bind="value: numberrange"/>
+            </div>
+            <div class="ui-grid-a">
+                <button class="ui-btn" class="OK" data-bind="click:onViewResult ">Ngẫu Nhiên</button>
+            </div>
+            <div class="ui-block-a">
+                <a href="index.html" rel="external" class="ui-shadow ui-btn ui-corner-all">Quay về</a>
+            </div>
+            <div class="ui-block-a">
+                <button class="ui-btn" class="OK" data-bind="click:onViewBack ">Copyright@ ĐĂNG KHÔI</button>
+            </div>
+        </div>
+        <div data-bind="css: { 'show' : !isSetting(), 'hide' : isSetting()}">
+            <div class="ui-grid-b" style="position: fixed;width: 100%;z-index: 99999;" >
+                <div class="ui-block-a">
+                    <button class="ui-btn" class="OK" data-bind="click:onViewBack ">Quay về</button>
+                </div>
+                <div class="ui-block-b">
+                    <button class="ui-btn" class="OK" data-bind="click:onViewResult ">Reset</button>
+                </div>
+            </div>
+            
+            <div class="notloading">
+                <div class="ui-grid-a">
+                    <h1 data-bind="text: txtsoroban, click: onResultAll"></h1>
+                </div>
+                
+            </div>
+        </div>
+        
+    </body>
+</html>
