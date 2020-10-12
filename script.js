@@ -3,12 +3,55 @@ var audiotts = document.createElement('audio');
 
 function readtts(sentence , mute){
     if(!mute){
-        console.log(sentence, parseInt(sentence), Number.isInteger(parseInt(sentence)))
-        audiotts.src = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=vi-VN&client=tw-ob&q=' + sentence;
-	    audiotts.play();
+        console.log(sentence, parseInt(sentence), Number.isInteger(parseInt(sentence)));
+
+        if(!!sentence){
+            sentence = sentence.replace("- ", "-").replace("+", "cộng ");
+            console.error(sentence);
+            audiotts.src = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=vi-VN&client=tw-ob&q=' + sentence;
+            audiotts.play();
+        }
+       
         
     }
     
+}
+
+function getNumberFromABS2(i, number, flag = true){
+    
+    if(flag){
+        return ("x ") + Math.abs(number);
+    }
+
+    return number;
+}
+
+function phepchia(){
+    var kq = 0;
+    var e = 0;
+    var numbers = [];
+    for(var i = 0; i < 1 ; i++){
+        var s1 = generateRandomInteger(2, 10);
+        var s2 = 0;
+        for(var y = 0; y < 10000; y++){
+            s2 = generateRandomInteger(1, 10);
+        }
+
+        kq = s1 * s2;
+
+        var strCached = kq + "" + s1 + "" + s2;
+        if(cached.indexOf(strCached) === -1){
+            numbers[e++] =  "  " + kq + ":" + s1;
+            cached.push(strCached);
+        }
+        
+
+    }
+
+    return {
+        numbers: numbers,
+        s: s2
+    }
 }
 
 // phep nhan - binh phuong
@@ -316,11 +359,35 @@ function getNumberFromABS(i, number, flag = true){
 
 var enable_word = true;
 
+function randSorobanABL1(numb){
+
+    var s = generateRandomInteger(70, 99);
+    var numbers = [];
+    var i  = 0;
+    var overi = 0;
+    numbers[i++] = s;
+    while(true && i < numb && overi < 50000){
+        var number = generateRandomInteger(-19, -1);
+        var a = s%10;
+        if(!checkABLKetHop(a, number)  && (s + number) < 99){
+            s += number;
+            numbers[i++] =  getNumberFromABS(i, number, enable_word);
+        }
+
+        overi++;
+    }
+
+    return {
+        numbers: numbers,
+        s: s
+    }
+}
+
 function randSorobanABL2(numb){
 
     var s = generateRandomInteger(10, 30);
     var numbers = [];
-    var i  = 1;
+    var i  = 0;
     var overi = 0;
     numbers[i++] = s;
     while(true && i < numb && overi < 50000){
@@ -348,7 +415,7 @@ function randSorobanABL3(numb){
     var numbers = [];
     var i  = 0;
     var overi = 0;
-    numbers[i++] =  s;
+    numbers[i] =  s;
     while(true && i < numb && overi < 50000){
         var b = generateRandomInteger(-9, 9);
         if(b != 0){
@@ -372,7 +439,7 @@ function randSorobanABL3(numb){
     }
 }
 
-function checkABN(s, number){
+function checkABL(s, number){
     var result = false;
     if((s == 5 || s==0) && (jQuery.inArray( number, [-5,1,2,3,4,0] ) != -1)){
         result = true;
@@ -444,6 +511,8 @@ function checkABLKetHop(a, b){
     } else if(a == 8 && (b == 6)){
         return true;
     }
+
+    console.log(a, b)
     return false;
 }
 
@@ -661,6 +730,144 @@ function randSorobanlevel2B_(numb){
     }
 }
 
+function randSorobanlevel2B_phai(numb){
+    var s = 0;
+    var numbers = [];
+    var rands = [];
+    var limit = 9;
+    var i  = 0;
+    var overi = 0;
+    while(true && i < numb && overi < 5000){
+
+        var s1 = s%10;
+        var number = generateRandomInteger(-9, 9);
+
+        var s2 = Math.floor((s/10)%10);
+        var number2 = generateRandomInteger(-9, 9);
+        
+        // if(number != 0 && number2 != 0){
+            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+            //         s += number * 10 + number2;
+            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+            //         i++;
+            //     }
+            // }
+
+            if((0 < s1 + number && s1 + number < limit) && number != 0){
+                // if(checkABN(s1, number) && checkABN(s2, number2)){
+                    s += number;
+                    numbers[i] =  getNumberFromABS(i, (number), enable_word); 
+                    i++;
+                // }
+            }
+        // }
+        overi++;
+    }
+
+    console.log(numbers)
+    return {
+        numbers: numbers,
+        s: s
+    }
+}
+
+function randSorobanlevel2B_trai(numb){
+    var s = 0;
+    var numbers = [];
+    var rands = [];
+    var limit = 9;
+    var i  = 0;
+    var overi = 0;
+    while(true && i < numb && overi < 500000){
+
+        var s1 = s%10;
+        var number = 0;
+
+        var s2 = Math.floor((s/10)%10);
+        var number2 = generateRandomInteger(-9, 9);
+        
+        // if(number != 0 && number2 != 0){
+            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+            //         s += number * 10 + number2;
+            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+            //         i++;
+            //     }
+            // }
+
+            if((0 <= s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0))){
+                // if(checkABN(s1, number) && checkABN(s2, number2)){
+                    s += (number2 * 10 + number);
+                    numbers[i] =  getNumberFromABS(i, (number2 * 10 + number), enable_word); 
+                    i++;
+                // }
+            }
+        // }
+        overi++;
+    }
+
+    console.log(numbers)
+    return {
+        numbers: numbers,
+        s: s
+    }
+}
+
+function randSorobanlevel3B(numb , observer){
+    var s = 0;
+    var numbers = [];
+    var rands = [];
+    var limit = 9;
+    var i  = 0;
+    var overi = 0;
+    while(true && i < numb && overi < 500000){
+
+        var s1 = s%10;
+        var number = generateRandomInteger(-9, 9);
+
+        var s2 = Math.floor((s/10)%10);
+        var number2 = generateRandomInteger(-9, 9);
+        
+        // if(number != 0 && number2 != 0){
+            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+            //         s += number * 10 + number2;
+            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+            //         i++;
+            //     }
+            // }    
+            if((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0))){
+                if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+                    s += (number2 * 10 + number);
+                    numbers[i] =  getNumberFromABS(i, (number2 * 10 + number), enable_word); 
+                    i++;
+                    
+                }
+                
+            } else if((0 <= s1 + number && s1 + number > limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0)) && (s +(number2 * 10 + number)) <= 99){
+                console.error(s%10, (number2 * 10 + number)%10);
+                if((!checkABLKetHop(s%10, (number2 * 10 + number)%10))){
+                    s += (number2 * 10 + number);
+                    numbers[i] =  getNumberFromABS(i, (number2 * 10 + number), enable_word); 
+                    i++;
+                    observer("bài này khá khó");
+                }
+
+                
+                
+            }
+        // }
+        overi++;
+    }
+
+    console.log(numbers)
+    return {
+        numbers: numbers,
+        s: s
+    }
+}
+
 function randSorobanlevel1B(numb){
     var s = 0;
     var numbers = [];
@@ -685,7 +892,7 @@ function randSorobanlevel1B(numb){
             //     }
             // }
 
-            if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+            if((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0))){
                 if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
                     s += (number2 * 10 + number);
                     numbers[i] =  getNumberFromABS(i, (number2 * 10 + number), enable_word); 
@@ -731,7 +938,7 @@ function randSorobanlevel1C_(numb){
             //     }
             // }
 
-            if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && (0 < s3 + number3 && s3 + number3 < limit) && ((number > 0 && number2 > 0&& number3 > 0) || (number < 0 && number2 < 0 && number3 < 0))){
+            if((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && (0 <= s3 + number3 && s3 + number3 <= limit) && ((number >= 0 && number2 >= 0&& number3 > 0) || (number <= 0 && number2 <= 0 && number3 < 0))){
                 // if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)  && checkNumberSorobanLevel1(s3, number3)){
                     s += (number3 * 100 + number2 * 10 + number);
                     numbers[i] =  getNumberFromABS(i, (number3 * 100 + number2 * 10 + number), enable_word);
@@ -777,7 +984,7 @@ function randSorobanlevel1C(numb){
             //     }
             // }
 
-            if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && (0 < s3 + number3 && s3 + number3 < limit) && ((number > 0 && number2 > 0&& number3 > 0) || (number < 0 && number2 < 0 && number3 < 0))){
+            if((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && (0 <= s3 + number3 && s3 + number3 <= limit) && ((number >= 0 && number2 >= 0&& number3 > 0) || (number <= 0 && number2 <= 0 && number3 < 0))){
                 if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)  && checkNumberSorobanLevel1(s3, number3)){
                     s += (number3 * 100 + number2 * 10 + number);
                     numbers[i] =  getNumberFromABS(i, (number3 * 100 + number2 * 10 + number), enable_word);

@@ -5,26 +5,25 @@
         <meta name="referrer" content="no-referrer">
         <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
         <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
         <script src="script.js"></script>
         <script src="js/level2.js"></script>
         <script src="js/jquery.fireworks.js"></script>
+        
         <script>
             
             $(document).ready(function(){
                 
+                var Topics = function(name, value) {
+                    this.name = name;
+                    this.value = value;
+                };
+                
                 var ViewModel = function(first, last) {
                     var self = this;
-
-                    this.allItems = ko.observableArray([
-                        "Fries", 
-                        "Eggs Benedict", 
-                        "Ham", 
-                        "Cheese"
-                    ]); // Initial items
-
-                    this.lblSubject = ko.observable("2 SỐ - KHÔNG HẾT HỢP");
 
                     this.isSetting = ko.observable(true);
                     this.number_temp = ko.observableArray();
@@ -45,6 +44,57 @@
 
                     this.mute = ko.observable(false);
 
+                    this.history = ko.observable("");
+
+                    this.percent = ko.observable(0);
+
+                    this.availableTopics = ko.observableArray([
+                        new Topics("KHÔNG HẾT HỢP - 2 SỐ", 0),
+                        new Topics("ANH BẠN NHỎ - 2 SỐ", 3),
+                        new Topics("ANH BẠN NHỎ - BÊN PHẢI", 8),
+                        new Topics("ANH BẠN NHỎ - BÊN TRÁI", 9),
+                        new Topics("CHỈ CÓ ANH BẠN LỚN +", 10),
+                        new Topics("CHỈ CÓ ANH BẠN LỚN -", 11),
+                        new Topics("CHỈ CÓ ANH BẠN LỚN +,-", 12),
+                        new Topics("ANH BẠN NHỎ, ANH BẠN LỚN - 2 SỐ", 6),
+                        new Topics("KHÔNG HẾT HỢP - 3 SỐ", 1),
+                        new Topics("KHÔNG HẾT HỢP - 4 SỐ", 2),
+                        new Topics("ANH BẠN NHỎ - 3 SỐ", 4),
+                        new Topics("ANH BẠN NHỎ - 4 SỐ", 5),
+                        new Topics("PHÉP CHIA 0 - 99", 7),
+                    ]);
+
+                    function tinhtientrinh(timer = 0, second = 5000){
+                        var solan = second/100;
+                        self.percent(100);
+                        var abc = setInterval(function(){
+                            self.percent(100 - (100/solan)*timer);
+                            if(self.percent() <= 0 || timer >= solan){
+                                
+                                clearInterval(abc);
+                            }
+                            timer += 1;
+                        }, 100)
+                    }
+
+                    
+
+                    this.nextNumber = function(){
+                        self.colorText(random_color()[generateRandomInteger(0, 10)]);
+                        var firstElement = self.number_temp.shift();
+                        if(self.number_temp().length >= 0 && !!firstElement){
+                            if(!!firstElement){
+                                self.sentence(self.sentence() + 1);
+								readtts(firstElement, self.mute());
+                                self.soroban(firstElement)
+
+                                self.history(self.history() + firstElement.replace("=?", " = "));
+                            }
+                        }else{
+                            self.history(self.history() + " = ");
+                        }
+                    }
+                    
                     this.tick = function() {
                         console.log("tick")
                         self.colorText(random_color()[generateRandomInteger(0, 10)]);
@@ -59,7 +109,7 @@
                                 self.isLastNumber(true);
                                 clearInterval(interval_timer);
                             }
-                            
+                            self.history(self.history() + firstElement.replace("=?", " = "));
                         } else {
                             self.isLastNumber(true);
                             clearInterval(interval_timer);
@@ -82,10 +132,15 @@
                     var isResult = false;
                     var fireworksField = null;
                     this.onResultAll = function(){
+                        
+                        self.history();
+
                         if(self.isLastNumber() && !isResult){
                             self.soroban(final_number);
 
                             readtts("Bằng " + final_number, self.mute());
+
+                            self.history(self.history() + final_number);
                             // if(final_number == 1){
                             //     readtts("không hạt trên, một hạt dưới", self.mute());
                             // }else if(final_number == 2){
@@ -113,7 +168,7 @@
                             isResult = true;
                             runtimer = setTimeout(function(){
 
-                                readtts('Đăng Khôi hãy cố gắng lên nào, mình sắp về đích rồi', false);
+                                readtts('Các bạn hãy cố gắng lên nào, mình sắp về đích rồi', false);
 
                                 // fireworksField = $('.notloading').fireworks({
                                 //     sound:true,// sound effect
@@ -140,31 +195,12 @@
                     var startTick = null;
                     var soudStart = null;
                     this.timers = ko.observable("0");
+                    this.hard = ko.observable("bài này khá dễ");
                     
-
-                    this.level.subscribe(function (level) {
-                        var message = "2 SỐ - KHÔNG HẾT HỢP";
-                        if(level == 0){
-                            message = "2 SỐ - KHÔNG HẾT HỢP";
-                        } else if(level == 1){
-                            message = "3 SỐ - KHÔNG HẾT HỢP";
-                        } else if(level == 2){
-                            message = "4 SỐ - KHÔNG HẾT HỢP";     
-                        } else if(level == 3){
-                            message = "2 SỐ - ANH BẠN NHỎ";
-                        } else if(level == 4){
-                            message = "3 SỐ - ANH BẠN NHỎ";
-                        }else if(level == 5){
-                            message = "4 SỐ - ANH BẠN NHỎ";
-                        }
-                        self.lblSubject(message);
-                    });
-
-                    
-
                     var final_number = 0;
                     this.onViewResult = function(){
                         //reset
+                        console.log(self.level())
                         self.isSetting(false);
                         self.isLoading(true);
                         self.isLastNumber(false);
@@ -172,32 +208,38 @@
                         self.sentence(0);
                         isResult = false;
                         self.number_temp.removeAll();
+                        self.history("");
+                        
+
+                        self.hard("bài này khá dễ");
 
                         self.image_loading("img/img"+generateRandomInteger(1, 31) + ".gif");
 
                         var results = randSorobanlevel1B(self.numberrange());
-                        if(self.level() == 0){
-                            self.lblSubject("2 SỐ - KHÔNG HẾT HỢP");
-                            result = randSorobanlevel1B(self.numberrange())
-                        }else if(self.level() == 1){
-                            self.lblSubject("3 SỐ - KHÔNG HẾT HỢP");
-                            results = randSorobanlevel1C(self.numberrange());
-                        }else if(self.level() == 2){
-                            self.lblSubject("4 SỐ - KHÔNG HẾT HỢP");
-                            results = randSorobanlevel1D(self.numberrange());
-                        }else if(self.level() == 3){
-                            self.lblSubject("2 SỐ - ANH BẠN NHỎ");
-                            results = randSorobanlevel2B_(self.numberrange(), 20);
-                        }else if(self.level() == 4){
-                            results = randSorobanlevel2C_(self.numberrange(), 50);
-                        }else if(self.level() == 5){
-                            results = randSorobanlevel1D_(self.numberrange(), 70);
-                        }else if(self.level() == 6){
-                            results = randSoroban22(self.numberrange(), 99);
-                        }else if(self.level() == 7){
-                            results = randSoroban33(self.numberrange(), 99);
-                        }else if(self.level() == 8){
-                            results = randSoroban44(self.numberrange(), 99);
+                        if(self.level().value == 0){
+                            result = randSorobanlevel1B(self.numberrange(), self.hard)
+                        }else if(self.level().value == 1){
+                            results = randSorobanlevel1C(self.numberrange(), self.hard);
+                        }else if(self.level().value == 2){
+                            results = randSorobanlevel1D(self.numberrange(), self.hard);
+                        }else if(self.level().value == 3){
+                            results = randSorobanlevel2B_(self.numberrange(), self.hard);
+                        }else if(self.level().value == 4){
+                            results = randSorobanlevel2C_(self.numberrange(), self.hard);
+                        }else if(self.level().value == 5){
+                            results = randSorobanlevel1D_(self.numberrange(), self.hard);
+                        }else if(self.level().value == 6){
+                            results = randSorobanlevel3B(self.numberrange(), self.hard);
+                        }else if(self.level().value == 7){
+                            results = phepchia(self.numberrange(), 99);
+                        }else if(self.level().value == 8){
+                            results = randSorobanlevel2B_phai(self.numberrange(), 99);
+                        }else if(self.level().value == 9){
+                            results = randSorobanlevel2B_trai(self.numberrange(), 99);
+                        }else if(self.level().value == 10){
+                            results = randSorobanABL2(self.numberrange(), 99);
+                        }else if(self.level().value == 11){
+                            results = randSorobanABL1(self.numberrange(), 99);
                         }
                        
                         console.log(results)
@@ -215,14 +257,18 @@
                         clearInterval(startTick);
                         clearInterval(soudStart);
 
+                        tinhtientrinh(6, 5000);
                         soudStart = setTimeout(function(){
-                            readtts('Đăng khôi hãy tập trung nào', false);
+                            readtts(self.hard() + ', Các bạn hãy tập trung nào', false);
                         }, 400);
                         startTick = setTimeout(function(){
                             self.isLoading(false);
                             self.tick();
-                            interval_timer = setInterval(self.tick, self.timer() * 1000 -  700)
-                        }, 4000);
+                            interval_timer = setInterval(self.tick, self.timer() * 1000);
+
+                            tinhtientrinh(0, self.timer() * 1000 * self.number_temp().length + 4000);
+                        }, 5000);
+                        
                         
                     }
 
@@ -263,10 +309,10 @@
 
                     var excersize = false;
                     var ketqua = [];
-                    for(var i = 0 ; i <100; i++){
+                    for(var i = 0 ; i <10; i++){
 
                         var inte = generateRandomInteger(1, 9);  
-                        result = randSorobanlevel2B_(length, 20)
+                        result = randSorobanABL1(length, 20)
                         console.log(result)
                         if((result.numbers.length) == length){
                             var str = "" +(index + 1);
@@ -276,7 +322,7 @@
                                 var ans = pad.substring(0, pad.length - str.length) + str
                                 var template = "<div>" + (ans) + "." + result.numbers.join(" ") + " = ..................... </div>"
                                 if(index%2 == 0){
-                                    template = "<div><b><i><u>" + (ans) + "." + result.numbers.join(" ") + " = </u></i></b> ..................... </div>"
+                                    template = "<div><b><i>" + (ans) + "." + result.numbers.join(" ") + " = </i></b> ..................... </div>"
                                 }
                                 ketqua[index] = result.s;
                                 index++;
@@ -317,6 +363,108 @@
             
         </script>
 		
+        
+    </head>
+    <body>
+        <div class="result">
+
+        </div>
+        
+        <div class="ui-grid-solo" data-bind="css: { 'show' : isSetting(), 'hide' : !isSetting()}">
+            <div class="ui-grid-a">
+                    <label for="slider-1">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer"  step=".1" min="0" max="20" value="3" data-bind="value: timer"/>
+            </div>
+            <div class="ui-grid-a">
+                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="100" value="10" data-bind="value: numberrange, valueUpdate: 'input'"/>
+            </div>
+
+            <div class="ui-grid-a">
+                <label for="select-native-1">chủ đề:</label>
+                <select name="select-native-1" id="select-native-1" data-bind="options: availableTopics,
+                                                                    optionsText: 'name',
+                                                                    value: level">
+                </select>
+            </div>
+            
+            <div class="ui-grid-a">
+                <button class="ui-btn" class="OK" data-bind="click:onViewResult ">Tạo Soroban</button>
+            </div>
+            <div  class="ui-grid-a">
+                <div class="ui-block-a">
+                     <label>
+                        <input type="checkbox" name="checkbox-0 " data-bind="checked: mute" >âm thanh
+                    </label>
+                </div>
+                <div>
+                     <label>
+                        <input type="checkbox" name="checkbox-0 " data-bind="checked: backgroundblack, click: onEventBackground" > Màu đen
+                    </label>
+                </div>
+                
+            </div>
+            <div class="ui-block-a">
+                <a href="index.html" rel="external" class="ui-shadow ui-btn ui-corner-all">Quay về</a>
+            </div>
+            <div class="ui-block-a">
+                <button class="ui-btn" class="OK" data-bind="click:onViewBack ">Copyright@ ĐĂNG KHÔI</button>
+            </div>
+        </div>
+        <div data-bind="css: { 'show' : !isSetting(), 'hide' : isSetting()}">
+            <!-- ko if: isLoading() -->
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" data-bind="style: {'width': percent() + '%'}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: !isLoading() -->
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" aria-valuenow="0" data-bind="style: {'width': percent() + '%'}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <!-- /ko -->
+            <div class="ui-grid-b" style="position: fixed;width: 100%;z-index: 99999;" >
+                <div class="ui-block-a">
+                    <button class="ui-btn" class="OK" data-bind="click:onViewBack ">Quay về</button>
+                </div>
+                <div class="ui-block-b">
+                    <button class="ui-btn" class="OK" data-bind="click:onViewResult ">Reset</button>
+                </div>
+                <div class="ui-block-b">
+                    <button class="ui-btn" class="OK" data-bind="text: timers() + 's', click: nextNumber">Next</button>
+                </div>
+            </div>
+            
+            <div class="ui-grid-a" style="position: fixed;top: 18px;left: 14px; z-index: 2;">
+                <h5 style="font-size: 27px;" data-bind="text: sentence() + '/' + numberrange()"></h5>
+            </div>
+
+            <!-- ko if: isLoading() -->
+            <div class="loading">
+                <img style="padding-top: 65px;max-height: 300px;min-height: 150px;" data-bind="attr: {'src': image_loading}"/>
+            </div>
+            
+            <!-- /ko -->
+            <!-- ko if: !isLoading() -->
+            <div class="notloading">
+                <div class="ui-grid-a">
+                    <h1 data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll"></h1>
+                </div>
+
+                <div style="font-size: 40px;color: red;" data-bind="text: history">
+
+                </div>
+                <!-- ko if: isLastNumber() -->
+                
+                <!-- /ko -->
+                
+            </div>
+            <!-- /ko -->
+            
+            
+
+            
+            
+        </div>
+        
+
         <style>
             body{
                 background-color: white !important;
@@ -338,11 +486,11 @@
 
             h1{
                 text-align: center;
-                font-size: 268px;
+                font-size: 300px;
             }
 
             h1.red{
-                font-size: 240px;
+                /* font-size: 340px; */
                 font-weight: bold;
                 color: red !important;
                 margin-top: 48px;
@@ -369,86 +517,5 @@
 
  
         </style>
-    </head>
-    <body>
-        <!-- <div class="result">
-
-        </div> -->
-        <div class="ui-grid-solo" data-bind="css: { 'show' : isSetting(), 'hide' : !isSetting()}">
-            <div class="ui-grid-a">
-                    <label for="slider-1">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer"  step=".1" min="1" max="6" value="3" data-bind="value: timer"/>
-            </div>
-            <div class="ui-grid-a">
-                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="30" value="10" data-bind="value: numberrange, valueUpdate: 'input'"/>
-            </div>
-            <div class="ui-grid-a">
-                   <label for="slider-2">level:</label><input type="range" name="numberrange" id="numberrange" min="0" max="8" value="0" data-bind="value: level"/>
-            </div>
-            <div class="ui-grid-a">
-                   <label for="slider-2" data-bind="text: lblSubject"></label>
-            </div>
-            <div  class="ui-grid-a">
-                <div class="ui-block-a">
-                     <label>
-                        <input type="checkbox" name="checkbox-0 " data-bind="checked: mute" >âm thanh
-                    </label>
-                </div>
-                <div>
-                     <label>
-                        <input type="checkbox" name="checkbox-0 " data-bind="checked: backgroundblack, click: onEventBackground" > Màu đen
-                    </label>
-                </div>
-                
-            </div>
-            <div class="ui-grid-a">
-                <button class="ui-btn" class="OK" data-bind="click:onViewResult ">Tạo Soroban</button>
-            </div>
-            <div class="ui-block-a">
-                <a href="index.html" rel="external" class="ui-shadow ui-btn ui-corner-all">Quay về</a>
-            </div>
-            <div class="ui-block-a">
-                <button class="ui-btn" class="OK" data-bind="click:onViewBack ">Copyright@ ĐĂNG KHÔI</button>
-            </div>
-        </div>
-        <div data-bind="css: { 'show' : !isSetting(), 'hide' : isSetting()}">
-            <div class="ui-grid-b" style="position: fixed;width: 100%;z-index: 99999;" >
-                <div class="ui-block-a">
-                    <button class="ui-btn" class="OK" data-bind="click:onViewBack ">Quay về</button>
-                </div>
-                <div class="ui-block-b">
-                    <button class="ui-btn" class="OK" data-bind="click:onViewResult ">Reset</button>
-                </div>
-                <div class="ui-block-b">
-                    <button class="ui-btn" class="OK" data-bind="text: timers() + 's'">Pause</button>
-                </div>
-            </div>
-            
-            <div class="ui-grid-a" style="position: fixed;top: 18px;left: 14px; z-index: 2;">
-                <h5 style="font-size: 27px;" data-bind="text: sentence() + '/' + numberrange()"></h5>
-            </div>
-
-            <!-- ko if: isLoading() -->
-            <div class="loading">
-                <img style="padding-top: 65px;max-height: 300px;min-height: 150px;" data-bind="attr: {'src': image_loading}"/>
-            </div>
-            <!-- /ko -->
-            <!-- ko if: !isLoading() -->
-            <div class="notloading">
-                <div class="ui-grid-a">
-                    <h1 data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll"></h1>
-                </div>
-                <!-- ko if: isLastNumber() -->
-                
-                <!-- /ko -->
-                
-            </div>
-            <!-- /ko -->
-            
-            
-
-            
-            
-        </div>
-        
     </body>
 </html>
