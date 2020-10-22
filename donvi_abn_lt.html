@@ -26,11 +26,9 @@
     </head>
     <body>
         <audio src="audio/tick.mp3"></audio>
-        <!-- <div class="result">
+        <div class="result">
 
-        </div> -->
-
-        
+        </div>
 
         
         
@@ -157,19 +155,12 @@
                             <img data-bind="attr: { src: abacusCol1() }" style="height: 264px;" />
                             <!-- ko if: isUseHistory() -->  
                                 <div style="font-size: 40px;color: red;" data-bind="text: history"></div>
-
-                                
                             <!-- /ko -->
                         </div>
                     <!-- /ko -->
 
                 </div>
-                <!-- ko if: isUseHistory() --> 
-                <div class="guide" style="text-align: center;font-size: 30px;font-weight: bold;">
-                    <span class="taytrai"  data-bind="text: abacusCol2_GUIDE()"></span> ;
-                    <span class="tayphai" data-bind="text: abacusCol1_GUIDE()" style="padding-left: 20px;color: red;"></span>
-                </div>
-                <!-- /ko -->
+
                 
                 <!-- ko if: isLastNumber() -->
                 

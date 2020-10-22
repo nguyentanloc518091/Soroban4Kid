@@ -1,82 +1,161 @@
 
 var audiotts = document.createElement('audio');
 
-function readtts(sentence , mute){
-    if(!mute){
-        console.log(sentence, parseInt(sentence), Number.isInteger(parseInt(sentence)));
+console.log("lythuyet", lythuyet(1, 4));
+function lythuyet(a, b, type = 'ABN') {
+    var result = null;
+    var lt = [
+        { name: "ABN", index: 4, data: "+4", result: "+5 - 1" },
+        { name: "ABN", index: 3, data: "+3", result: "+5 - 2" },
+        { name: "ABN", index: 2, data: "+2", result: "+5 - 3" },
+        { name: "ABN", index: 1, data: "+1", result: "+5 - 4" },
 
-        if(!!sentence){
-            sentence = sentence.replace("- ", "-").replace("+", "cộng ");
-            console.error(sentence);
-            audiotts.src = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=vi-VN&client=tw-ob&q=' + sentence;
-            audiotts.play();
-        }
-       
-        
+        { name: "ABN", index: -4, data: "-4", result: "-5 + 1" },
+        { name: "ABN", index: -3, data: "-3", result: "-5 + 2" },
+        { name: "ABN", index: -2, data: "-2", result: "-5 + 3" },
+        { name: "ABN", index: -1, data: "-1", result: "-5 + 4" },
+
+        { name: "ABL", index: 9, data: "9", result: "+10 - 1" },
+        { name: "ABL", index: 8, data: "8", result: "+10 - 2" },
+        { name: "ABL", index: 7, data: "7", result: "+10 - 3" },
+        { name: "ABL", index: 6, data: "6", result: "+10 - 4" },
+        { name: "ABL", index: 5, data: "5", result: "+10 - 5" },
+        { name: "ABL", index: 4, data: "4", result: "+10 - 6" },
+        { name: "ABL", index: 3, data: "3", result: "+10 - 7" },
+        { name: "ABL", index: 2, data: "2", result: "+10 - 8" },
+        { name: "ABL", index: 1, data: "1", result: "+10 - 9" },
+
+        { name: "ABL", index: -9, data: "-9", result: "-10 + 1" },
+        { name: "ABL", index: -8, data: "-8", result: "-10 + 2" },
+        { name: "ABL", index: -7, data: "-7", result: "-10 + 3" },
+        { name: "ABL", index: -6, data: "-6", result: "-10 + 4" },
+        { name: "ABL", index: -5, data: "-5", result: "-10 + 5" },
+        { name: "ABL", index: -4, data: "-4", result: "-10 + 6" },
+        { name: "ABL", index: -3, data: "-3", result: "-10 + 7" },
+        { name: "ABL", index: -2, data: "-2", result: "-10 + 8" },
+        { name: "ABL", index: -1, data: "-1", result: "-10 + 9" }
+
+    ]
+
+    console.log(checkABL(a, b))
+    if (!checkABN(a, b) && type == 'ABN') {
+        lt.forEach(element => {
+            var name = element.name;
+            if (name == 'ABN' && b == element.index) {
+                result = element;
+            }
+        });
     }
-    
+
+    if (!checkABL(a, b) && type == 'ABL') {
+        lt.forEach(element => {
+            var name = element.name;
+            if (name == 'ABL' && b == element.index) {
+                result = element;
+            }
+        });
+    }
+    return result;
 }
 
-function getNumberFromABS2(i, number, flag = true){
-    
-    if(flag){
+
+function Sound(source, volume, loop) {
+    this.source = source;
+    this.volume = volume;
+    this.loop = loop;
+    var son;
+    this.son = son;
+    this.finish = false;
+    this.stop = function () {
+        document.body.removeChild(this.son);
+    }
+    this.start = function () {
+        if (this.finish) return false;
+        this.son = document.createElement("embed");
+        this.son.setAttribute("src", this.source);
+        this.son.setAttribute("hidden", "true");
+        this.son.setAttribute("volume", this.volume);
+        this.son.setAttribute("autostart", "true");
+        this.son.setAttribute("loop", this.loop);
+        document.body.appendChild(this.son);
+    }
+    this.remove = function () {
+        document.body.removeChild(this.son);
+        this.finish = true;
+    }
+    this.init = function (volume, loop) {
+        this.finish = false;
+        this.volume = volume;
+        this.loop = loop;
+    }
+}
+
+
+function readtts(sentence, mute, speakEnglish = false) {
+    if (mute) {
+        console.log(sentence, parseInt(sentence), Number.isInteger(parseInt(sentence)));
+
+        if (!!sentence) {
+            sentence = sentence.replace("- ", "-")
+            console.error(sentence);
+            if (speakEnglish) {
+                audiotts.src = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=' + sentence;
+            } else {
+                sentence = sentence.replace("- ", "-").replace("+", "cộng ");
+                audiotts.src = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=vi-VN&client=tw-ob&q=' + sentence;
+            }
+
+            audiotts.play();
+        } else {
+            if (sentence.indexOf("=") != 1) {
+                if (speakEnglish) {
+                    audiotts.src = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=' + sentence;
+                } else {
+                    audiotts.src = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=vi-VN&client=tw-ob&q=' + sentence;
+                }
+
+                audiotts.play();
+            }
+        }
+
+
+    }
+
+}
+
+function getNumberFromABS2(i, number, flag = true) {
+
+    if (flag) {
         return ("x ") + Math.abs(number);
     }
 
     return number;
 }
 
-function phepchia(){
-    var kq = 0;
-    var e = 0;
-    var numbers = [];
-    for(var i = 0; i < 1 ; i++){
-        var s1 = generateRandomInteger(2, 10);
-        var s2 = 0;
-        for(var y = 0; y < 10000; y++){
-            s2 = generateRandomInteger(1, 10);
-        }
-
-        kq = s1 * s2;
-
-        var strCached = kq + "" + s1 + "" + s2;
-        if(cached.indexOf(strCached) === -1){
-            numbers[e++] =  "  " + kq + ":" + s1;
-            cached.push(strCached);
-        }
-        
-
-    }
-
-    return {
-        numbers: numbers,
-        s: s2
-    }
-}
 
 // phep nhan - binh phuong
 
 var cached = [];
-function splitNumber(s){
+function splitNumber(s) {
     return {
-        donvi: s%10,
-        chuc: Math.floor((s/10)%10),
-        tram: Math.floor((s/100)%10),
-        ngan: Math.floor((s/1000)%10),
-        chucngan: Math.floor((s/10000)%10)
+        donvi: s % 10,
+        chuc: Math.floor((s / 10) % 10),
+        tram: Math.floor((s / 100) % 10),
+        ngan: Math.floor((s / 1000) % 10),
+        chucngan: Math.floor((s / 10000) % 10)
     }
 }
 
-function checkConditionSorobanMulti(s1, s2, length = 2){
+function checkConditionSorobanMulti(s1, s2, length = 2) {
     var result = false;
     var number1s = splitNumber(s1);
     var number2s = splitNumber(s2);
-    if(length == 2) {
+    if (length == 2) {
         var memory = number1s.donvi * number2s.donvi;
         var memorizes = splitNumber(memory);
 
-        
-        if((number1s.chuc * number2s.donvi + number1s.donvi * number2s.chuc  + memorizes.chuc<= 99)){
+
+        if ((number1s.chuc * number2s.donvi + number1s.donvi * number2s.chuc + memorizes.chuc <= 99)) {
             result = true;
         }
     }
@@ -85,20 +164,20 @@ function checkConditionSorobanMulti(s1, s2, length = 2){
 }
 
 
-function randMultiSorobanBasic(numb, length = 0){
+function randMultiSorobanBasic(numb, length = 0) {
     var s1 = generateRandomInteger(11, 99);
     var numbers = [];
-    var i  = 0;
+    var i = 0;
     var overi = 0;
     var s = 0;
 
-    
+
     numbers[i] = s1;
-    while(true && i < 1 && overi < 2){
+    while (true && i < 1 && overi < 2) {
         var s2 = generateRandomInteger(11, 99);
 
-        if(checkConditionSorobanMulti(s1, s2, 2)){
-            numbers[++i] =  getNumberFromABS2(i, (s2), enable_word);
+        if (checkConditionSorobanMulti(s1, s2, 2)) {
+            numbers[++i] = getNumberFromABS2(i, (s2), enable_word);
             // cached.push(s);
             s = s1 * s2;
         }
@@ -112,26 +191,26 @@ function randMultiSorobanBasic(numb, length = 0){
     }
 }
 
-function randMulti13(numb, length = 0){
+function randMulti13(numb, length = 0) {
     var s = generateRandomInteger(1001, 9999);
-    
-    var numbers = [];
-    var i  = 0;
-    var overi = 0;
-    var donvi = s%10;
-    var chuc = Math.floor((s/10)%10);
-    var cham = Math.floor((s/100)%10);
-    var ngan = Math.floor((s/1000)%10);
-    var chucngan = Math.floor((s/10000)%10);
 
-    
+    var numbers = [];
+    var i = 0;
+    var overi = 0;
+    var donvi = s % 10;
+    var chuc = Math.floor((s / 10) % 10);
+    var cham = Math.floor((s / 100) % 10);
+    var ngan = Math.floor((s / 1000) % 10);
+    var chucngan = Math.floor((s / 10000) % 10);
+
+
     numbers[i] = s;
-    while(true && i < 1 && overi < 2){
+    while (true && i < 1 && overi < 2) {
         // console.error(cached.indexOf(abc))
-        if((chuc * 2 + donvi <= 9) && cached.indexOf(s) === -1 ){
+        if ((chuc * 2 + donvi <= 9) && cached.indexOf(s) === -1) {
             console.error(donvi, chuc, cham, ngan);
             console.error(donvi + chuc, chuc + cham, cham + ngan)
-            numbers[++i] =  getNumberFromABS2(i, (12), enable_word);
+            numbers[++i] = getNumberFromABS2(i, (12), enable_word);
             cached.push(s);
             s = s * 12;
         }
@@ -145,26 +224,26 @@ function randMulti13(numb, length = 0){
     }
 }
 
-function randMulti12(numb, length = 0){
+function randMulti12(numb, length = 0) {
     var s = generateRandomInteger(1001, 9999);
-    
-    var numbers = [];
-    var i  = 0;
-    var overi = 0;
-    var donvi = s%10;
-    var chuc = Math.floor((s/10)%10);
-    var cham = Math.floor((s/100)%10);
-    var ngan = Math.floor((s/1000)%10);
-    var chucngan = Math.floor((s/10000)%10);
 
-    
+    var numbers = [];
+    var i = 0;
+    var overi = 0;
+    var donvi = s % 10;
+    var chuc = Math.floor((s / 10) % 10);
+    var cham = Math.floor((s / 100) % 10);
+    var ngan = Math.floor((s / 1000) % 10);
+    var chucngan = Math.floor((s / 10000) % 10);
+
+
     numbers[i] = s;
-    while(true && i < 1 && overi < 2){
+    while (true && i < 1 && overi < 2) {
         // console.error(cached.indexOf(abc))
-        if((chuc * 2 + donvi <= 9) && (cham * 2 + chuc <= 9) && (ngan * 2 + cham <= 9) && cached.indexOf(s) === -1 ){
+        if ((chuc * 2 + donvi <= 9) && (cham * 2 + chuc <= 9) && (ngan * 2 + cham <= 9) && cached.indexOf(s) === -1) {
             console.error(donvi, chuc, cham, ngan);
             console.error(donvi + chuc, chuc + cham, cham + ngan)
-            numbers[++i] =  getNumberFromABS2(i, (12), enable_word);
+            numbers[++i] = getNumberFromABS2(i, (12), enable_word);
             cached.push(s);
             s = s * 12;
         }
@@ -178,26 +257,26 @@ function randMulti12(numb, length = 0){
     }
 }
 
-function randMulti11(numb, length = 0){
+function randMulti11(numb, length = 0) {
     var s = generateRandomInteger(1001, 9999);
-    
-    var numbers = [];
-    var i  = 0;
-    var overi = 0;
-    var donvi = s%10;
-    var chuc = Math.floor((s/10)%10);
-    var cham = Math.floor((s/100)%10);
-    var ngan = Math.floor((s/1000)%10);
-    var chucngan = Math.floor((s/10000)%10);
 
-    
+    var numbers = [];
+    var i = 0;
+    var overi = 0;
+    var donvi = s % 10;
+    var chuc = Math.floor((s / 10) % 10);
+    var cham = Math.floor((s / 100) % 10);
+    var ngan = Math.floor((s / 1000) % 10);
+    var chucngan = Math.floor((s / 10000) % 10);
+
+
     numbers[i] = s;
-    while(true && i < 1 && overi < 2){
+    while (true && i < 1 && overi < 2) {
         // console.error(cached.indexOf(abc))
-        if((chuc + donvi <= 9) && (chuc + cham <= 9) && (cham + ngan <= 9)  && cached.indexOf(s) === -1 ){
+        if ((chuc + donvi <= 9) && (chuc + cham <= 9) && (cham + ngan <= 9) && cached.indexOf(s) === -1) {
             console.error(donvi, chuc, cham, ngan);
             console.error(donvi + chuc, chuc + cham, cham + ngan)
-            numbers[++i] =  getNumberFromABS2(i, (11), enable_word);
+            numbers[++i] = getNumberFromABS2(i, (11), enable_word);
             cached.push(s);
             s = s * 11;
         }
@@ -211,28 +290,28 @@ function randMulti11(numb, length = 0){
     }
 }
 
-function randMultiEndTheSample(numb, end = 0){
+function randMultiEndTheSample(numb, end = 0) {
     var s = generateRandomInteger(1, 9);
 
-    if(end == 0){
-        end =  generateRandomInteger(1, 9);  
+    if (end == 0) {
+        end = generateRandomInteger(1, 9);
     }
-    
+
 
     var numbers = [];
-    var i  = 1;
+    var i = 1;
     var overi = 0;
     numbers[i++] = (s * 10 + end);
-    while(true && i <= 2 && overi < 5000){
+    while (true && i <= 2 && overi < 5000) {
         var number = generateRandomInteger(1, 9);
         var abc = (s * 10 + end) * (number * 10 + end);
         // console.error(cached.indexOf(abc))
-        if((s + number == 10) && cached.indexOf(s + "x" + number) === -1 ){
+        if ((s + number == 10) && cached.indexOf(s + "x" + number) === -1) {
             console.error("red", end, s, number, cached)
             cached.push(s + "x" + number);
             s = abc;
-            numbers[i++] =  getNumberFromABS2(i, (number * 10 + end), enable_word);
-            
+            numbers[i++] = getNumberFromABS2(i, (number * 10 + end), enable_word);
+
         }
 
         overi++;
@@ -244,28 +323,28 @@ function randMultiEndTheSample(numb, end = 0){
     }
 }
 
-function randMultiEndTheSample(numb, end = 0){
+function randMultiEndTheSample(numb, end = 0) {
     var s = generateRandomInteger(1, 9);
 
-    if(end == 0){
-        end =  generateRandomInteger(1, 9);  
+    if (end == 0) {
+        end = generateRandomInteger(1, 9);
     }
-    
+
 
     var numbers = [];
-    var i  = 1;
+    var i = 1;
     var overi = 0;
     numbers[i++] = (s * 10 + end);
-    while(true && i <= 2 && overi < 5000){
+    while (true && i <= 2 && overi < 5000) {
         var number = generateRandomInteger(1, 9);
         var abc = (s * 10 + end) * (number * 10 + end);
         // console.error(cached.indexOf(abc))
-        if((s + number == 10) && cached.indexOf(abc) === -1 ){
+        if ((s + number == 10) && cached.indexOf(abc) === -1) {
             console.error("red", end, s, number, cached)
             cached.push(s + "x" + number);
             s = abc;
-            numbers[i++] =  getNumberFromABS2(i, (number * 10 + end), enable_word);
-            
+            numbers[i++] = getNumberFromABS2(i, (number * 10 + end), enable_word);
+
         }
 
         overi++;
@@ -277,28 +356,28 @@ function randMultiEndTheSample(numb, end = 0){
     }
 }
 
-function randMultiStartTheSample(numb, first = 0){
+function randMultiStartTheSample(numb, first = 0) {
     var s = generateRandomInteger(1, 9);
 
-    if(first == 0){
-        first =  generateRandomInteger(1, 9);  
+    if (first == 0) {
+        first = generateRandomInteger(1, 9);
     }
-    
+
 
     var numbers = [];
-    var i  = 1;
+    var i = 1;
     var overi = 0;
     numbers[i++] = (first * 10 + s);
-    while(true && i <= 2 && overi < 5000){
+    while (true && i <= 2 && overi < 5000) {
         var number = generateRandomInteger(1, 9);
         var abc = (first * 10 + s) * (first * 10 + number);
         // console.error(cached.indexOf(abc))
-        if((s + number == 10) && cached.indexOf(abc) === -1 ){
+        if ((s + number == 10) && cached.indexOf(abc) === -1) {
             console.error("red", first, s, number, cached)
             cached.push(s + "x" + number);
             s = abc;
-            numbers[i++] =  getNumberFromABS2(i, (first * 10 + number), enable_word);
-            
+            numbers[i++] = getNumberFromABS2(i, (first * 10 + number), enable_word);
+
         }
 
         overi++;
@@ -310,23 +389,23 @@ function randMultiStartTheSample(numb, first = 0){
     }
 }
 
-function randMultiBy5(numb){
+function randMultiBy5(numb) {
     var s = generateRandomInteger(1, 9);
 
     var numbers = [];
-    var i  = 1;
+    var i = 1;
     var overi = 0;
     numbers[i++] = (s * 10 + 5);
-    while(true && i <= 2 && overi < 5000){
+    while (true && i <= 2 && overi < 5000) {
         var number = generateRandomInteger(1, 9);
         var abc = (s * 10 + 5) * (number * 10 + 5);
         // console.error(cached.indexOf(abc))
-        if((s + number == 10) && cached.indexOf(s + "x" + number) === -1 ){
+        if ((s + number == 10) && cached.indexOf(s + "x" + number) === -1) {
             console.error("red", s, number, cached)
             cached.push(s + "x" + number);
             s = abc;
-            numbers[i++] =  getNumberFromABS2(i, (number * 10 + 5), enable_word);
-            
+            numbers[i++] = getNumberFromABS2(i, (number * 10 + 5), enable_word);
+
         }
 
         overi++;
@@ -338,9 +417,9 @@ function randMultiBy5(numb){
     }
 }
 
-function getNumberFromABS2(i, number, flag = true){
-    
-    if(flag){
+function getNumberFromABS2(i, number, flag = true) {
+
+    if (flag) {
         return ("x ") + Math.abs(number);
     }
 
@@ -348,10 +427,10 @@ function getNumberFromABS2(i, number, flag = true){
 }
 
 
-function getNumberFromABS(i, number, flag = true){
-    
-    if(flag){
-        return (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(number);
+function getNumberFromABS(i, number, flag = true) {
+
+    if (flag) {
+        return (i != 0 ? (number > 0 ? " + " : " - ") : " ") + Math.abs(number);
     }
 
     return number;
@@ -359,44 +438,25 @@ function getNumberFromABS(i, number, flag = true){
 
 var enable_word = true;
 
-function randSorobanABL1(numb){
-
-    var s = generateRandomInteger(70, 99);
-    var numbers = [];
-    var i  = 0;
-    var overi = 0;
-    numbers[i++] = s;
-    while(true && i < numb && overi < 50000){
-        var number = generateRandomInteger(-19, -1);
-        var a = s%10;
-        if(!checkABLKetHop(a, number)  && (s + number) < 99){
-            s += number;
-            numbers[i++] =  getNumberFromABS(i, number, enable_word);
-        }
-
-        overi++;
-    }
-
-    return {
-        numbers: numbers,
-        s: s
-    }
-}
-
-function randSorobanABL2(numb){
+//randSorobanABLKH_ABN_CONG
+function randSorobanABLKH_ABN_CONG(numb) {
 
     var s = generateRandomInteger(10, 30);
     var numbers = [];
-    var i  = 0;
+    var i = 0;
     var overi = 0;
     numbers[i++] = s;
-    while(true && i < numb && overi < 50000){
-        var number = generateRandomInteger(1, 19);
-        var a = s%10;
-        if(!checkABLKetHop(a, number)  && (s + number) < 99){
-            s += number;
-            numbers[i++] =  getNumberFromABS(i, number, enable_word);
+    while (true && i < numb && overi < 50000) {
+        var number = generateRandomInteger(-9, 9);
+        if (number != 0) {
+            var a = s % 10;
+            var b = number % 10;
+            if ((checkABLKetHop(a, b) || checkABN(a, b)) && 0 < (s + number) && (s + number) < 99) {
+                s += number;
+                numbers[i++] = getNumberFromABS(i, number, enable_word);
+            }
         }
+
 
         overi++;
     }
@@ -407,28 +467,172 @@ function randSorobanABL2(numb){
     }
 }
 
-function randSorobanABL3(numb){
+function randSorobanABLKH_ABN_CONG_DUONG(numb) {
+
+    var s = generateRandomInteger(5, 10);
+    var numbers = [];
+    var i = 0;
+    var overi = 0;
+    numbers[i++] = s;
+    while (true && i < numb && overi < 50000) {
+        var number = generateRandomInteger(-9, 9);
+        if (number != 0) {
+            var a = s % 10;
+            var b = number % 10;
+            if ((checkABLKetHop(a, b) || checkABN(a, b)) && 0 < (s + number) && (s + number) < 99) {
+                s += number;
+                numbers[i++] = getNumberFromABS(i, number, enable_word);
+            }
+        }
+
+
+        overi++;
+    }
+
+    return {
+        numbers: numbers,
+        s: s
+    }
+}
+
+function randSorobanABLKH_ABN_CONG_AM(numb) {
+
+    var s = generateRandomInteger(10, 30);
+    var numbers = [];
+    var i = 0;
+    var overi = 0;
+    numbers[i++] = s;
+    while (true && i < numb && overi < 50000) {
+        var number = generateRandomInteger(-9, 9);
+        if (number != 0) {
+            var a = s % 10;
+            var b = number % 10;
+            if ((checkABLKetHop(a, b) || checkABN(a, b)) && 0 < (s + number) && (s + number) < 99) {
+                s += number;
+                numbers[i++] = getNumberFromABS(i, number, enable_word);
+            }
+        }
+
+
+        overi++;
+    }
+
+    return {
+        numbers: numbers,
+        s: s
+    }
+}
+
+function randSorobanABL1(numb) {
+
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+
+    var s = generateRandomInteger(70, 99);
+    var numbers = [];
+    var i = 0;
+    var overi = 0;
+    numbers[i++] = s;
+    while (true && i < numb && overi < 50000) {
+        var number = generateRandomInteger(-19, -1);
+        var a = s % 10;
+        var b = number % 10;
+        if (!checkABLKetHop(a, b) && (s + number) < 99) {
+
+            var s1 = s % 10;
+            var number = number % 10;
+
+            var s2 = Math.floor((s / 10) % 10);
+            var number2 = Math.floor((number / 10) % 10);
+            
+            lt1[i] = lythuyet(s1, number, "ABL");
+            lt2[i] = lythuyet(s2, number2, "ABL");
+
+            s += number;
+            numbers[i++] = getNumberFromABS(i, number, enable_word);
+        }
+
+        overi++;
+    }
+
+    return {
+        numbers: numbers,
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
+    }
+}
+
+
+function randSorobanABL2(numb) {
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+
+    var s = generateRandomInteger(10, 30);
+    var numbers = [];
+    var i = 0;
+    var overi = 0;
+    numbers[i++] = s;
+    while (true && i < numb && overi < 50000) {
+        var number = generateRandomInteger(1, 19);
+        var a = s % 10;
+        var b = number % 10;
+        if (!checkABLKetHop(a, b) && (s + number) < 99) {
+
+            var s1 = s % 10;
+            var number = number % 10;
+
+            var s2 = Math.floor((s / 10) % 10);
+            var number2 = Math.floor((number / 10) % 10);
+            
+            lt1[i] = lythuyet(s1, number, "ABL");
+            lt2[i] = lythuyet(s2, number2, "ABL");
+
+            s += number;
+            numbers[i++] = getNumberFromABS(i, number, enable_word);
+        }
+
+        overi++;
+    }
+
+    return {
+        numbers: numbers,
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
+    }
+}
+
+function randSorobanABL3(numb) {
 
     var allownumber = [5, 6, 7, 8];
     var index = generateRandomInteger(0, 3);
     var s = allownumber[index];
     var numbers = [];
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    numbers[i] =  s;
-    while(true && i < numb && overi < 50000){
+    numbers[i] = s;
+    while (true && i < numb && overi < 50000) {
         var b = generateRandomInteger(-9, 9);
-        if(b != 0){
-            var a = s%10;
-            if(checkABLKetHop(a, b) && (s + b) >= 0 && (s + b) < 99){
+        if (b != 0) {
+            var a = s % 10;
+            if (checkABLKetHop(a, b) && (s + b) >= 0 && (s + b) < 99) {
                 s += b;
-                numbers[i++] =  getNumberFromABS(i, b, enable_word);
-            }else if(checkNumberSorobanLevel1(a, b) && index > 1  && (s + b) >= 0 &&(s + b) < 99){
+                numbers[i++] = getNumberFromABS(i, b, enable_word);
+            } else if (checkNumberSorobanLevel1(a, b) && index > 1 && (s + b) >= 0 && (s + b) < 99) {
                 s += b;
-                numbers[i++] =  getNumberFromABS(i, b, enable_word);
+                numbers[i++] = getNumberFromABS(i, b, enable_word);
             }
         }
-        
+
 
         overi++;
     }
@@ -439,60 +643,63 @@ function randSorobanABL3(numb){
     }
 }
 
-function checkABL(s, number){
+function checkABL(s, number) {
     var result = false;
-    if((s == 5 || s==0) && (jQuery.inArray( number, [-5,1,2,3,4,0] ) != -1)){
+    if ((s == 5 || s == 0) && (jQuery.inArray(number, [-5, 1, 2, 3, 4, 0]) != -1)) {
         result = true;
-    }else if((s == 6 || s==0) && (jQuery.inArray( number, [1,2,3, -1, -5, -6,0] ) != -1)){
+    } else if ((s == 6 || s == 0) && (jQuery.inArray(number, [1, 2, 3, -1, -5, -6, 0]) != -1)) {
         result = true;
-    }else if((s == 7 || s==0) && (jQuery.inArray( number, [1,2, -1, -2, -5, -6, -7,0] ) != -1)){
+    } else if ((s == 7 || s == 0) && (jQuery.inArray(number, [1, 2, -1, -2, -5, -6, -7, 0]) != -1)) {
         result = true;
-    }else if((s == 8 || s==0) && (jQuery.inArray( number, [1, -1, -2, -3, -5, -8,0] ) != -1)){
+    } else if ((s == 8 || s == 0) && (jQuery.inArray(number, [1, -1, -2, -3, -5, -8, 0]) != -1)) {
         result = true;
-    }else if((s == 9 || s==0) && (jQuery.inArray( number,  [-1,-2,-3,-4, -5, -6,-7,-8,-9,0]) != -1)){
+    } else if ((s == 9 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, -5, -6, -7, -8, -9, 0]) != -1)) {
         result = true;
-    }else if((s == 4 || s==0) && (jQuery.inArray( number,  [-1, -2, -3, -4, 5,0]) != -1)){
+    } else if ((s == 4 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, 5, 0]) != -1)) {
         result = true;
-    }else if((s == 3 || s==0) && (jQuery.inArray( number,  [-1, 1, -2, -3, 5,6,0]) != -1)){
+    } else if ((s == 3 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, -3, 5, 6, 0]) != -1)) {
         result = true;
-    }else if((s == 2 || s==0) && (jQuery.inArray( number,  [-1, 1, -2, 2, 5,6,7,0]) != -1)){
+    } else if ((s == 2 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, 2, 5, 6, 7, 0]) != -1)) {
         result = true;
-    }else if((s == 1 || s==0) && (jQuery.inArray( number,  [-1, 1, 2, 3, 5, 6, 7, 8,0]) != -1)){
+    } else if ((s == 1 || s == 0) && (jQuery.inArray(number, [-1, 1, 2, 3, 5, 6, 7, 8, 0]) != -1)) {
         result = true;
     }
     return result;
 }
 
-function checkABN(s, number){
+function checkABN(s, number) {
     var result = false;
-    if((s == 5 || s==0) && (jQuery.inArray( number, [-5,1,2,3,4,0] ) != -1)){
+    if ((s == 5 || s == 0) && (jQuery.inArray(number, [-5, 1, 2, 3, 4, 0]) != -1)) {
         result = true;
-    }else if((s == 6 || s==0) && (jQuery.inArray( number, [1,2,3, -1, -5, -6,0] ) != -1)){
+    } else if ((s == 6 || s == 0) && (jQuery.inArray(number, [1, 2, 3, -1, -5, -6, 0]) != -1)) {
         result = true;
-    }else if((s == 7 || s==0) && (jQuery.inArray( number, [1,2, -1, -2, -5, -6, -7,0] ) != -1)){
+    } else if ((s == 7 || s == 0) && (jQuery.inArray(number, [1, 2, -1, -2, -5, -6, -7, 0]) != -1)) {
         result = true;
-    }else if((s == 8 || s==0) && (jQuery.inArray( number, [1, -1, -2, -3, -5, -8,0] ) != -1)){
+    } else if ((s == 8 || s == 0) && (jQuery.inArray(number, [1, -1, -2, -3, -5, -8, 0]) != -1)) {
         result = true;
-    }else if((s == 9 || s==0) && (jQuery.inArray( number,  [-1,-2,-3,-4, -5, -6,-7,-8,-9,0]) != -1)){
+    } else if ((s == 9 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, -5, -6, -7, -8, -9, 0]) != -1)) {
         result = true;
-    }else if((s == 4 || s==0) && (jQuery.inArray( number,  [-1, -2, -3, -4, 5,0]) != -1)){
+    } else if ((s == 4 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, 5, 0]) != -1)) {
         result = true;
-    }else if((s == 3 || s==0) && (jQuery.inArray( number,  [-1, 1, -2, -3, 5,6,0]) != -1)){
+    } else if ((s == 3 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, -3, 5, 6, 0]) != -1)) {
         result = true;
-    }else if((s == 2 || s==0) && (jQuery.inArray( number,  [-1, 1, -2, 2, 5,6,7,0]) != -1)){
+    } else if ((s == 2 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, 2, 5, 6, 7, 0]) != -1)) {
         result = true;
-    }else if((s == 1 || s==0) && (jQuery.inArray( number,  [-1, 1, 2, 3, 5, 6, 7, 8,0]) != -1)){
+    } else if ((s == 1 || s == 0) && (jQuery.inArray(number, [-1, 1, 2, 3, 5, 6, 7, 8, 0]) != -1)) {
         result = true;
     }
     return result;
 }
 
+// 14 - 6 = -10 + 5 - 1
+// 14 - 7 = -10 + 5 - 2
+// 14 - 8 = -10 + 5 - 3
+// 14 - 9 = -10 + 5 - 4
 
 // 5 + 9 =>  +10 - 5 + 4
 // 5 + 8 =>  +10 - 5 + 3
 // 5 + 7 =>  +10 - 5 + 2
 // 5 + 6 =>  +10 - 5 + 1
-
 
 // 6 + 6 =>  +10 - 5 + 1
 // 6 + 7 =>  +10 - 5 + 2
@@ -501,14 +708,16 @@ function checkABN(s, number){
 // 7 + 6 =>  +10 - 5 + 1
 
 // 8 + 6 =>  10 - 5 + 1
-function checkABLKetHop(a, b){
-    if(a == 5 && (b == 9 || b == 8 || b == 7 || b == 6)){
+function checkABLKetHop(a, b) {
+    if (a == 5 && (b == 9 || b == 8 || b == 7 || b == 6)) {
         return true;
-    } else if(a == 6 && (b == 6 || b == 7 || b == 8)){
+    } else if (a == 6 && (b == 6 || b == 7 || b == 8)) {
         return true;
-    } else if(a == 7 && (b == 6)){
+    } else if (a == 7 && (b == 6)) {
         return true;
-    } else if(a == 8 && (b == 6)){
+    } else if (a == 8 && (b == 6)) {
+        return true;
+    } else if (a == 4 && (b == -9 || b == -8 || b == -7 || b == -6)) {
         return true;
     }
 
@@ -516,70 +725,70 @@ function checkABLKetHop(a, b){
     return false;
 }
 
-function randSorobanlevel1AA(numb ){
+function randSorobanlevel1AA(numb) {
     var s1 = generateRandomInteger(1, 9);
     var number = generateRandomInteger(-9, 9);
-    
+
     var s = 0;
     var numbers = [];
     var rands = [];
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 50000){
-        if(number != 0){
-            if((s1%10 + number == 5 )){
-                var rannums = [-5,1,2,3,4];
+    while (true && i < numb && overi < 50000) {
+        if (number != 0) {
+            if ((s1 % 10 + number == 5)) {
+                var rannums = [-5, 1, 2, 3, 4];
                 var number = rannums[Math.floor(Math.random() * rannums.length)];
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word);
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
-            }else if((s1%10 + number == 6)){
-                var rannums = [1,2,3, -1, -5, -6];
+            } else if ((s1 % 10 + number == 6)) {
+                var rannums = [1, 2, 3, -1, -5, -6];
                 var number = rannums[Math.floor(Math.random() * rannums.length)];
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word);
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
-            }else if((s1%10 + number == 7)){
-                var rannums = [1,2, -1, -2, -5, -6, -7];
+            } else if ((s1 % 10 + number == 7)) {
+                var rannums = [1, 2, -1, -2, -5, -6, -7];
                 var number = rannums[Math.floor(Math.random() * rannums.length)];
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word);
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
-            }else if((s1%10 + number == 8)){
+            } else if ((s1 % 10 + number == 8)) {
                 var rannums = [1, -1, -2, -3, -5, -8];
                 var number = rannums[Math.floor(Math.random() * rannums.length)];
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word);
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
-            }else if((s1%10 + number == 9)){
-                var rannums = [-1,-2,-3,-4, -5, -6,-7,-8,-9];
+            } else if ((s1 % 10 + number == 9)) {
+                var rannums = [-1, -2, -3, -4, -5, -6, -7, -8, -9];
                 var number = rannums[Math.floor(Math.random() * rannums.length)];
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word);
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
-            }else if((s1%10 + number == 4)){
+            } else if ((s1 % 10 + number == 4)) {
                 var rannums = [-1, -2, -3, -4, 5];
                 var number = rannums[Math.floor(Math.random() * rannums.length)];
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word);
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
-            }else if((s1%10 + number == 3)){
-                var rannums = [-1, 1, -2, -3, 5,6];
+            } else if ((s1 % 10 + number == 3)) {
+                var rannums = [-1, 1, -2, -3, 5, 6];
                 var number = rannums[Math.floor(Math.random() * rannums.length)];
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word);
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
-            }else if((s1%10 + number == 2)){
-                var rannums = [-1, 1, -2, 2, 5,6,7];
+            } else if ((s1 % 10 + number == 2)) {
+                var rannums = [-1, 1, -2, 2, 5, 6, 7];
                 var number = rannums[Math.floor(Math.random() * rannums.length)];
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word);
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
-            }else if((s1%10 + number == 1) ){
+            } else if ((s1 % 10 + number == 1)) {
                 var rannums = [-1, 1, 2, 3, 5, 6, 7, 8];
                 var number = rannums[Math.floor(Math.random() * rannums.length)];
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word);
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
             }
         }
@@ -593,57 +802,57 @@ function randSorobanlevel1AA(numb ){
     }
 }
 
-function randSorobanlevel1A(numb, limit = 9){
+function randSorobanlevel1A(numb, limit = 9) {
     var s = 0;
     var numbers = [];
     var rands = [];
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 500000){
+    while (true && i < numb && overi < 500000) {
         var number = generateRandomInteger(-9, 9);
-        
-        if(number != 0){
+
+        if (number != 0) {
             console.log("ham nay")
-            if( 0 < s + number && s + number < limit){
-                if((s == 5 || s==0) && (jQuery.inArray( number, [-5,1,2,3,4] ) != -1)){
+            if (0 < s + number && s + number < limit) {
+                if ((s == 5 || s == 0) && (jQuery.inArray(number, [-5, 1, 2, 3, 4]) != -1)) {
                     s += number;
-                    numbers[i] =  getNumberFromABS(i, number, enable_word);
+                    numbers[i] = getNumberFromABS(i, number, enable_word);
                     i++;
-                }else if((s == 6 || s==0) && (jQuery.inArray( number, [1,2,3, -1, -5, -6] ) != -1)){
+                } else if ((s == 6 || s == 0) && (jQuery.inArray(number, [1, 2, 3, -1, -5, -6]) != -1)) {
                     s += number;
-                    numbers[i] =  getNumberFromABS(i, number, enable_word);
+                    numbers[i] = getNumberFromABS(i, number, enable_word);
                     i++;
-                    
-                }else if((s == 7 || s==0) && (jQuery.inArray( number, [1,2, -1, -2, -5, -6, -7] ) != -1)){
+
+                } else if ((s == 7 || s == 0) && (jQuery.inArray(number, [1, 2, -1, -2, -5, -6, -7]) != -1)) {
                     s += number;
-                    numbers[i] =  getNumberFromABS(i, number, enable_word);
+                    numbers[i] = getNumberFromABS(i, number, enable_word);
                     i++;
-                }else if((s == 8 || s==0) && (jQuery.inArray( number, [1, -1, -2, -3, -5, -8] ) != -1)){
+                } else if ((s == 8 || s == 0) && (jQuery.inArray(number, [1, -1, -2, -3, -5, -8]) != -1)) {
                     s += number;
-                    numbers[i] =  getNumberFromABS(i, number, enable_word);
+                    numbers[i] = getNumberFromABS(i, number, enable_word);
                     i++;
-                }else if((s == 9 || s==0) && (jQuery.inArray( number,  [-1,-2,-3,-4, -5, -6,-7,-8,-9]) != -1)){
+                } else if ((s == 9 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, -5, -6, -7, -8, -9]) != -1)) {
                     s += number;
-                    numbers[i] =  getNumberFromABS(i, number, enable_word);
+                    numbers[i] = getNumberFromABS(i, number, enable_word);
                     i++;
-                }else if((s == 4 || s==0) && (jQuery.inArray( number,  [-1, -2, -3, -4, 5]) != -1)){
+                } else if ((s == 4 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, 5]) != -1)) {
                     s += number;
-                    numbers[i] =  getNumberFromABS(i, number, enable_word);
+                    numbers[i] = getNumberFromABS(i, number, enable_word);
                     i++;
-                }else if((s == 3 || s==0) && (jQuery.inArray( number,  [-1, 1, -2, -3, 5,6]) != -1)){
+                } else if ((s == 3 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, -3, 5, 6]) != -1)) {
                     s += number;
-                    numbers[i] =  getNumberFromABS(i, number, enable_word);
+                    numbers[i] = getNumberFromABS(i, number, enable_word);
                     i++;
-                }else if((s == 2 || s==0) && (jQuery.inArray( number,  [-1, 1, -2, 2, 5,6,7]) != -1)){
+                } else if ((s == 2 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, 2, 5, 6, 7]) != -1)) {
                     s += number;
-                    numbers[i] =  getNumberFromABS(i, number, enable_word);
+                    numbers[i] = getNumberFromABS(i, number, enable_word);
                     i++;
-                }else if((s == 1 || s==0) && (jQuery.inArray( number,  [-1, 1, 2, 3, 5, 6, 7, 8]) != -1)){
+                } else if ((s == 1 || s == 0) && (jQuery.inArray(number, [-1, 1, 2, 3, 5, 6, 7, 8]) != -1)) {
                     s += number;
-                    numbers[i] =  getNumberFromABS(i, number, enable_word);
+                    numbers[i] = getNumberFromABS(i, number, enable_word);
                     i++;
                 }
-                
+
             }
         }
         overi++;
@@ -656,69 +865,75 @@ function randSorobanlevel1A(numb, limit = 9){
     }
 }
 
-function checkNumberSorobanLevel1(s, number){
+function checkNumberSorobanLevel1(s, number) {
     var result = false;
-    if((s == 5 || s==0) && (jQuery.inArray( number, [-5,1,2,3,4,0] ) != -1)){
+    if ((s == 5 || s == 0) && (jQuery.inArray(number, [-5, 1, 2, 3, 4, 0]) != -1)) {
         result = true;
-    }else if((s == 6 || s==0) && (jQuery.inArray( number, [1,2,3, -1, -5, -6,0] ) != -1)){
+    } else if ((s == 6 || s == 0) && (jQuery.inArray(number, [1, 2, 3, -1, -5, -6, 0]) != -1)) {
         result = true;
-    }else if((s == 7 || s==0) && (jQuery.inArray( number, [1,2, -1, -2, -5, -6, -7,0] ) != -1)){
+    } else if ((s == 7 || s == 0) && (jQuery.inArray(number, [1, 2, -1, -2, -5, -6, -7, 0]) != -1)) {
         result = true;
-    }else if((s == 8 || s==0) && (jQuery.inArray( number, [1, -1, -2, -3, -5, -8,0] ) != -1)){
+    } else if ((s == 8 || s == 0) && (jQuery.inArray(number, [1, -1, -2, -3, -5, -8, 0]) != -1)) {
         result = true;
-    }else if((s == 9 || s==0) && (jQuery.inArray( number,  [-1,-2,-3,-4, -5, -6,-7,-8,-9,0]) != -1)){
+    } else if ((s == 9 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, -5, -6, -7, -8, -9, 0]) != -1)) {
         result = true;
-    }else if((s == 4 || s==0) && (jQuery.inArray( number,  [-1, -2, -3, -4, 5,0]) != -1)){
+    } else if ((s == 4 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, 5, 0]) != -1)) {
         result = true;
-    }else if((s == 3 || s==0) && (jQuery.inArray( number,  [-1, 1, -2, -3, 5,6,0]) != -1)){
+    } else if ((s == 3 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, -3, 5, 6, 0]) != -1)) {
         result = true;
-    }else if((s == 2 || s==0) && (jQuery.inArray( number,  [-1, 1, -2, 2, 5,6,7,0]) != -1)){
+    } else if ((s == 2 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, 2, 5, 6, 7, 0]) != -1)) {
         result = true;
-    }else if((s == 1 || s==0) && (jQuery.inArray( number,  [-1, 1, 2, 3, 5, 6, 7, 8,0]) != -1)){
+    } else if ((s == 1 || s == 0) && (jQuery.inArray(number, [-1, 1, 2, 3, 5, 6, 7, 8, 0]) != -1)) {
         result = true;
     }
     return result;
 }
 
-function checkABNManual(s1, number){
+function checkABNManual(s1, number) {
     var result = false;
-    if((s1== 9 && number == 2) || (s1== 3 && number == 2)){
+    if ((s1 == 9 && number == 2) || (s1 == 3 && number == 2)) {
 
     }
     return result;
 }
 
-function randSorobanlevel2B_(numb){
+function randSorobanlevel2B_(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 9;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 500000){
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+    while (true && i < numb && overi < 500000) {
 
-        var s1 = s%10;
+        var s1 = s % 10;
         var number = generateRandomInteger(-9, 9);
 
-        var s2 = Math.floor((s/10)%10);
+        var s2 = Math.floor((s / 10) % 10);
         var number2 = generateRandomInteger(-9, 9);
-        
-        // if(number != 0 && number2 != 0){
-            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-            //         s += number * 10 + number2;
-            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
-            //         i++;
-            //     }
-            // }
 
-            if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-                // if(checkABN(s1, number) && checkABN(s2, number2)){
-                    s += (number2 * 10 + number);
-                    numbers[i] =  getNumberFromABS(i, (number2 * 10 + number), enable_word); 
-                    i++;
-                // }
-            }
+        // if(number != 0 && number2 != 0){
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }
+
+        if ((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))) {
+            // if(checkABN(s1, number) && checkABN(s2, number2)){
+            lt1[i] = lythuyet(s1, number);
+            lt2[i] = lythuyet(s2, number2);
+            s += (number2 * 10 + number);
+            numbers[i] = getNumberFromABS(i, (number2 * 10 + number), enable_word);
+            i++;
+            // }
+        }
         // }
         overi++;
     }
@@ -726,41 +941,50 @@ function randSorobanlevel2B_(numb){
     console.log(numbers)
     return {
         numbers: numbers,
-        s: s
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
     }
 }
 
-function randSorobanlevel2B_phai(numb){
+function randSorobanlevel2B_phai(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 9;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 5000){
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+    while (true && i < numb && overi < 5000) {
 
-        var s1 = s%10;
+        var s1 = s % 10;
         var number = generateRandomInteger(-9, 9);
 
-        var s2 = Math.floor((s/10)%10);
+        var s2 = Math.floor((s / 10) % 10);
         var number2 = generateRandomInteger(-9, 9);
-        
-        // if(number != 0 && number2 != 0){
-            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-            //         s += number * 10 + number2;
-            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
-            //         i++;
-            //     }
-            // }
 
-            if((0 < s1 + number && s1 + number < limit) && number != 0){
-                // if(checkABN(s1, number) && checkABN(s2, number2)){
-                    s += number;
-                    numbers[i] =  getNumberFromABS(i, (number), enable_word); 
-                    i++;
-                // }
-            }
+        // if(number != 0 && number2 != 0){
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }
+
+        if ((0 < s1 + number && s1 + number < limit) && number != 0) {
+            // if(checkABN(s1, number) && checkABN(s2, number2)){
+            lt1[i] = lythuyet(s % 10, number);
+            s += number;
+            numbers[i] = getNumberFromABS(i, (number), enable_word);
+            i++;
+            // }
+        }
         // }
         overi++;
     }
@@ -768,41 +992,51 @@ function randSorobanlevel2B_phai(numb){
     console.log(numbers)
     return {
         numbers: numbers,
-        s: s
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
     }
 }
 
-function randSorobanlevel2B_trai(numb){
+function randSorobanlevel2B_trai(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 9;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 500000){
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+    while (true && i < numb && overi < 500000) {
 
-        var s1 = s%10;
+        var s1 = s % 10;
         var number = 0;
 
-        var s2 = Math.floor((s/10)%10);
+        var s2 = Math.floor((s / 10) % 10);
         var number2 = generateRandomInteger(-9, 9);
-        
+
         // if(number != 0 && number2 != 0){
-            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-            //         s += number * 10 + number2;
-            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
-            //         i++;
-            //     }
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }
+
+        if ((0 <= s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0))) {
+            // if(checkABN(s1, number) && checkABN(s2, number2)){
+            console.log("=====", Math.floor((s / 10) % 10))
+            lt2[i] = lythuyet(Math.floor((s / 10) % 10), number2);
+            s += (number2 * 10 + number);
+            numbers[i] = getNumberFromABS(i, (number2 * 10 + number), enable_word);
+            i++;
             // }
-
-            if((0 <= s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0))){
-                // if(checkABN(s1, number) && checkABN(s2, number2)){
-                    s += (number2 * 10 + number);
-                    numbers[i] =  getNumberFromABS(i, (number2 * 10 + number), enable_word); 
-                    i++;
-                // }
-            }
+        }
         // }
         overi++;
     }
@@ -810,53 +1044,71 @@ function randSorobanlevel2B_trai(numb){
     console.log(numbers)
     return {
         numbers: numbers,
-        s: s
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
     }
 }
 
-function randSorobanlevel3B(numb , observer){
+function randSorobanlevel3B(numb, observer) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 9;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 500000){
 
-        var s1 = s%10;
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+
+    while (true && i < numb && overi < 500000) {
+
+        var s1 = s % 10;
         var number = generateRandomInteger(-9, 9);
 
-        var s2 = Math.floor((s/10)%10);
+        var s2 = Math.floor((s / 10) % 10);
         var number2 = generateRandomInteger(-9, 9);
-        
+
         // if(number != 0 && number2 != 0){
-            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-            //         s += number * 10 + number2;
-            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
-            //         i++;
-            //     }
-            // }    
-            if((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0))){
-                if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-                    s += (number2 * 10 + number);
-                    numbers[i] =  getNumberFromABS(i, (number2 * 10 + number), enable_word); 
-                    i++;
-                    
-                }
-                
-            } else if((0 <= s1 + number && s1 + number > limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0)) && (s +(number2 * 10 + number)) <= 99){
-                console.error(s%10, (number2 * 10 + number)%10);
-                if((!checkABLKetHop(s%10, (number2 * 10 + number)%10))){
-                    s += (number2 * 10 + number);
-                    numbers[i] =  getNumberFromABS(i, (number2 * 10 + number), enable_word); 
-                    i++;
-                    observer("bài này khá khó");
-                }
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }    
+        if ((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0))) {
+            if (checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)) {
 
-                
-                
+                lt1[i] = lythuyet(s1, number);
+                lt2[i] = lythuyet(s2, number2);
+
+                s += (number2 * 10 + number);
+                numbers[i] = getNumberFromABS(i, (number2 * 10 + number), enable_word);
+                i++;
+
             }
+
+        } else if ((0 <= s1 + number && s1 + number > limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0)) && (s + (number2 * 10 + number)) <= 99) {
+            console.error(s % 10, (number2 * 10 + number) % 10);
+            if ((!checkABLKetHop(s % 10, (number2 * 10 + number) % 10))) {
+
+                lt1[i] = lythuyet(s1, number, "ABL");
+                lt2[i] = lythuyet(s2, number2, "ABL");
+
+                s += (number2 * 10 + number);
+                numbers[i] = getNumberFromABS(i, (number2 * 10 + number), enable_word);
+                i++;
+                observer("bài này khá khó");
+            }
+
+
+
+        }
         // }
         overi++;
     }
@@ -864,41 +1116,45 @@ function randSorobanlevel3B(numb , observer){
     console.log(numbers)
     return {
         numbers: numbers,
-        s: s
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
     }
 }
 
-function randSorobanlevel1B(numb){
+function randSorobanlevel1B(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 9;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 500000){
+    while (true && i < numb && overi < 500000) {
 
-        var s1 = s%10;
+        var s1 = s % 10;
         var number = generateRandomInteger(-9, 9);
 
-        var s2 = Math.floor((s/10)%10);
+        var s2 = Math.floor((s / 10) % 10);
         var number2 = generateRandomInteger(-9, 9);
-        
+
         // if(number != 0 && number2 != 0){
-            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-            //         s += number * 10 + number2;
-            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
-            //         i++;
-            //     }
-            // }
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }
 
-            if((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0))){
-                if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-                    s += (number2 * 10 + number);
-                    numbers[i] =  getNumberFromABS(i, (number2 * 10 + number), enable_word); 
-                    i++;
-                }
+        if ((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0))) {
+            if (checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)) {
+                s += (number2 * 10 + number);
+                numbers[i] = getNumberFromABS(i, (number2 * 10 + number), enable_word);
+                i++;
             }
+        }
         // }
         overi++;
     }
@@ -910,139 +1166,41 @@ function randSorobanlevel1B(numb){
     }
 }
 
-function randSorobanlevel1C_(numb){
+function randSorobanlevel1C_(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 9;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 500000){
+    while (true && i < numb && overi < 500000) {
 
-        var s1 = s%10;
+        var s1 = s % 10;
         var number = generateRandomInteger(-9, 9);
 
-        var s2 = Math.floor((s/10)%10);
+        var s2 = Math.floor((s / 10) % 10);
         var number2 = generateRandomInteger(-9, 9);
 
-        var s3 = Math.floor((s/100)%10);
-        var number3 = generateRandomInteger(-9, 9);
-        
-        
-        // if(number != 0 && number2 != 0){
-            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-            //         s += number * 10 + number2;
-            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
-            //         i++;
-            //     }
-            // }
-
-            if((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && (0 <= s3 + number3 && s3 + number3 <= limit) && ((number >= 0 && number2 >= 0&& number3 > 0) || (number <= 0 && number2 <= 0 && number3 < 0))){
-                // if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)  && checkNumberSorobanLevel1(s3, number3)){
-                    s += (number3 * 100 + number2 * 10 + number);
-                    numbers[i] =  getNumberFromABS(i, (number3 * 100 + number2 * 10 + number), enable_word);
-                    i++;
-                // }
-            }
-        // }
-        overi++;
-    }
-
-    console.log(numbers)
-    return {
-        numbers: numbers,
-        s: s
-    }
-}
-
-function randSorobanlevel1C(numb){
-    var s = 0;
-    var numbers = [];
-    var rands = [];
-    var limit = 9;
-    var i  = 0;
-    var overi = 0;
-    while(true && i < numb && overi < 500000){
-
-        var s1 = s%10;
-        var number = generateRandomInteger(-9, 9);
-
-        var s2 = Math.floor((s/10)%10);
-        var number2 = generateRandomInteger(-9, 9);
-
-        var s3 = Math.floor((s/100)%10);
-        var number3 = generateRandomInteger(-9, 9);
-        
-        
-        // if(number != 0 && number2 != 0){
-            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-            //         s += number * 10 + number2;
-            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
-            //         i++;
-            //     }
-            // }
-
-            if((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && (0 <= s3 + number3 && s3 + number3 <= limit) && ((number >= 0 && number2 >= 0&& number3 > 0) || (number <= 0 && number2 <= 0 && number3 < 0))){
-                if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)  && checkNumberSorobanLevel1(s3, number3)){
-                    s += (number3 * 100 + number2 * 10 + number);
-                    numbers[i] =  getNumberFromABS(i, (number3 * 100 + number2 * 10 + number), enable_word);
-                    i++;
-                }
-            }
-        // }
-        overi++;
-    }
-
-    console.log(numbers)
-    return {
-        numbers: numbers,
-        s: s
-    }
-}
-
-function randSorobanlevel1D_(numb){
-    var s = 0;
-    var numbers = [];
-    var rands = [];
-    var limit = 9;
-    var i  = 0;
-    var overi = 0;
-    while(true && i < numb && overi < 500000){
-
-        var s1 = s%10;
-        var number = generateRandomInteger(-9, 9);
-
-        var s2 = Math.floor((s/10)%10);
-        var number2 = generateRandomInteger(-9, 9);
-
-        var s3 = Math.floor((s/100)%10);
+        var s3 = Math.floor((s / 100) % 10);
         var number3 = generateRandomInteger(-9, 9);
 
-        var s4 = Math.floor((s/1000)%10);
-        var number4 = generateRandomInteger(-9, 9);
-        
-        // if(number != 0 && number2 != 0){
-            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-            //         s += number * 10 + number2;
-            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
-            //         i++;
-            //     }
-            // }
 
-            if((0 <= s1 + number && s1 + number <= limit) && 
-               (0 <= s2 + number2 && s2 + number2 <= limit) && 
-               (0 <= s3 + number3 && s3 + number3 <= limit) && 
-               (0 <= s4 + number4 && s4 + number4 <= limit) && 
-               ((number >= 0 && number2 >= 0 && number3 >= 0 && number4 > 0) || (number <= 0 && number2 <= 0 && number3 <= 0 && number4 < 0))){
-                // if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2) && checkNumberSorobanLevel1(s3, number3)  && checkNumberSorobanLevel1(s4, number4)){
-                    s += (number4 * 1000 + number3 * 100 + number2 * 10 + number);
-                    numbers[i] = getNumberFromABS(i, ( number4 * 1000 + number3 * 100 + number2 * 10 + number), enable_word); 
-                    i++;
-                // }
-            }
+        // if(number != 0 && number2 != 0){
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }
+
+        if ((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && (0 <= s3 + number3 && s3 + number3 <= limit) && ((number >= 0 && number2 >= 0 && number3 > 0) || (number <= 0 && number2 <= 0 && number3 < 0))) {
+            // if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)  && checkNumberSorobanLevel1(s3, number3)){
+            s += (number3 * 100 + number2 * 10 + number);
+            numbers[i] = getNumberFromABS(i, (number3 * 100 + number2 * 10 + number), enable_word);
+            i++;
+            // }
+        }
         // }
         overi++;
     }
@@ -1054,47 +1212,41 @@ function randSorobanlevel1D_(numb){
     }
 }
 
-function randSorobanlevel1D(numb){
+function randSorobanlevel1C(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 9;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 500000){
+    while (true && i < numb && overi < 500000) {
 
-        var s1 = s%10;
+        var s1 = s % 10;
         var number = generateRandomInteger(-9, 9);
 
-        var s2 = Math.floor((s/10)%10);
+        var s2 = Math.floor((s / 10) % 10);
         var number2 = generateRandomInteger(-9, 9);
 
-        var s3 = Math.floor((s/100)%10);
+        var s3 = Math.floor((s / 100) % 10);
         var number3 = generateRandomInteger(-9, 9);
 
-        var s4 = Math.floor((s/1000)%10);
-        var number4 = generateRandomInteger(-9, 9);
-        
-        // if(number != 0 && number2 != 0){
-            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-            //         s += number * 10 + number2;
-            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
-            //         i++;
-            //     }
-            // }
 
-            if((0 <= s1 + number && s1 + number <= limit) && 
-               (0 <= s2 + number2 && s2 + number2 <= limit) && 
-               (0 <= s3 + number3 && s3 + number3 <= limit) && 
-               (0 <= s4 + number4 && s4 + number4 <= limit) && 
-               ((number >= 0 && number2 >= 0 && number3 >= 0 && number4 > 0) || (number <= 0 && number2 <= 0 && number3 <= 0 && number4 < 0))){
-                if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2) && checkNumberSorobanLevel1(s3, number3)  && checkNumberSorobanLevel1(s4, number4)){
-                    s += (number4 * 1000 + number3 * 100 + number2 * 10 + number);
-                    numbers[i] = getNumberFromABS(i, ( number4 * 1000 + number3 * 100 + number2 * 10 + number), enable_word); 
-                    i++;
-                }
+        // if(number != 0 && number2 != 0){
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }
+
+        if ((0 <= s1 + number && s1 + number <= limit) && (0 <= s2 + number2 && s2 + number2 <= limit) && (0 <= s3 + number3 && s3 + number3 <= limit) && ((number >= 0 && number2 >= 0 && number3 > 0) || (number <= 0 && number2 <= 0 && number3 < 0))) {
+            if (checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2) && checkNumberSorobanLevel1(s3, number3)) {
+                s += (number3 * 100 + number2 * 10 + number);
+                numbers[i] = getNumberFromABS(i, (number3 * 100 + number2 * 10 + number), enable_word);
+                i++;
             }
+        }
         // }
         overi++;
     }
@@ -1106,57 +1258,161 @@ function randSorobanlevel1D(numb){
     }
 }
 
-function randSorobanlevel1E(numb){
+function randSorobanlevel1D_(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 9;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 500000){
+    while (true && i < numb && overi < 500000) {
 
-        var s1 = s%10;
+        var s1 = s % 10;
         var number = generateRandomInteger(-9, 9);
 
-        var s2 = Math.floor((s/10)%10);
+        var s2 = Math.floor((s / 10) % 10);
         var number2 = generateRandomInteger(-9, 9);
 
-        var s3 = Math.floor((s/100)%10);
+        var s3 = Math.floor((s / 100) % 10);
         var number3 = generateRandomInteger(-9, 9);
 
-        var s4 = Math.floor((s/1000)%10);
+        var s4 = Math.floor((s / 1000) % 10);
         var number4 = generateRandomInteger(-9, 9);
 
-        var s5 = Math.floor((s/10000)%10);
+        // if(number != 0 && number2 != 0){
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }
+
+        if ((0 <= s1 + number && s1 + number <= limit) &&
+            (0 <= s2 + number2 && s2 + number2 <= limit) &&
+            (0 <= s3 + number3 && s3 + number3 <= limit) &&
+            (0 <= s4 + number4 && s4 + number4 <= limit) &&
+            ((number >= 0 && number2 >= 0 && number3 >= 0 && number4 > 0) || (number <= 0 && number2 <= 0 && number3 <= 0 && number4 < 0))) {
+            // if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2) && checkNumberSorobanLevel1(s3, number3)  && checkNumberSorobanLevel1(s4, number4)){
+            s += (number4 * 1000 + number3 * 100 + number2 * 10 + number);
+            numbers[i] = getNumberFromABS(i, (number4 * 1000 + number3 * 100 + number2 * 10 + number), enable_word);
+            i++;
+            // }
+        }
+        // }
+        overi++;
+    }
+
+    console.log(numbers)
+    return {
+        numbers: numbers,
+        s: s
+    }
+}
+
+function randSorobanlevel1D(numb) {
+    var s = 0;
+    var numbers = [];
+    var rands = [];
+    var limit = 9;
+    var i = 0;
+    var overi = 0;
+    while (true && i < numb && overi < 500000) {
+
+        var s1 = s % 10;
+        var number = generateRandomInteger(-9, 9);
+
+        var s2 = Math.floor((s / 10) % 10);
+        var number2 = generateRandomInteger(-9, 9);
+
+        var s3 = Math.floor((s / 100) % 10);
+        var number3 = generateRandomInteger(-9, 9);
+
+        var s4 = Math.floor((s / 1000) % 10);
+        var number4 = generateRandomInteger(-9, 9);
+
+        // if(number != 0 && number2 != 0){
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }
+
+        if ((0 <= s1 + number && s1 + number <= limit) &&
+            (0 <= s2 + number2 && s2 + number2 <= limit) &&
+            (0 <= s3 + number3 && s3 + number3 <= limit) &&
+            (0 <= s4 + number4 && s4 + number4 <= limit) &&
+            ((number >= 0 && number2 >= 0 && number3 >= 0 && number4 > 0) || (number <= 0 && number2 <= 0 && number3 <= 0 && number4 < 0))) {
+            if (checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2) && checkNumberSorobanLevel1(s3, number3) && checkNumberSorobanLevel1(s4, number4)) {
+                s += (number4 * 1000 + number3 * 100 + number2 * 10 + number);
+                numbers[i] = getNumberFromABS(i, (number4 * 1000 + number3 * 100 + number2 * 10 + number), enable_word);
+                i++;
+            }
+        }
+        // }
+        overi++;
+    }
+
+    console.log(numbers)
+    return {
+        numbers: numbers,
+        s: s
+    }
+}
+
+function randSorobanlevel1E(numb) {
+    var s = 0;
+    var numbers = [];
+    var rands = [];
+    var limit = 9;
+    var i = 0;
+    var overi = 0;
+    while (true && i < numb && overi < 500000) {
+
+        var s1 = s % 10;
+        var number = generateRandomInteger(-9, 9);
+
+        var s2 = Math.floor((s / 10) % 10);
+        var number2 = generateRandomInteger(-9, 9);
+
+        var s3 = Math.floor((s / 100) % 10);
+        var number3 = generateRandomInteger(-9, 9);
+
+        var s4 = Math.floor((s / 1000) % 10);
+        var number4 = generateRandomInteger(-9, 9);
+
+        var s5 = Math.floor((s / 10000) % 10);
         var number5 = generateRandomInteger(-9, 9);
-        
+
         // if(number != 0 && number2 != 0){
-            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-            //         s += number * 10 + number2;
-            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
-            //         i++;
-            //     }
-            // }
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }
 
-            if((0 <= s1 + number && s1 + number < limit) && 
-               (0 <= s2 + number2 && s2 + number2 <= limit) && 
-               (0 <= s3 + number3 && s3 + number3 <= limit) && 
-               (0 <= s4 + number4 && s4 + number4 <= limit) && 
-               (0 <= s5 + number5 && s5 + number5 <= limit) && 
-               ((number >= 0 && number2 >= 0 && number3 >= 0 && number4 >= 0 && number5 > 0) || (number <= 0 && number2 <= 0 && number3 <= 0 && number4 <= 0 && number5 < 0))){
+        if ((0 <= s1 + number && s1 + number < limit) &&
+            (0 <= s2 + number2 && s2 + number2 <= limit) &&
+            (0 <= s3 + number3 && s3 + number3 <= limit) &&
+            (0 <= s4 + number4 && s4 + number4 <= limit) &&
+            (0 <= s5 + number5 && s5 + number5 <= limit) &&
+            ((number >= 0 && number2 >= 0 && number3 >= 0 && number4 >= 0 && number5 > 0) || (number <= 0 && number2 <= 0 && number3 <= 0 && number4 <= 0 && number5 < 0))) {
 
-                if(checkNumberSorobanLevel1(s1, number) && 
-                checkNumberSorobanLevel1(s2, number2) && 
-                checkNumberSorobanLevel1(s3, number3)  && 
+            if (checkNumberSorobanLevel1(s1, number) &&
+                checkNumberSorobanLevel1(s2, number2) &&
+                checkNumberSorobanLevel1(s3, number3) &&
                 checkNumberSorobanLevel1(s4, number4) &&
-                checkNumberSorobanLevel1(s5, number5)){
+                checkNumberSorobanLevel1(s5, number5)) {
 
-                    s += (number5 * 10000 + number4 * 1000 + number3 * 100 + number2 * 10 + number);
-                    numbers[i] = getNumberFromABS(i, (number5 * 10000 + number4 * 1000 + number3 * 100 + number2 * 10 + number), enable_word); 
-                    i++;
-                }
+                s += (number5 * 10000 + number4 * 1000 + number3 * 100 + number2 * 10 + number);
+                numbers[i] = getNumberFromABS(i, (number5 * 10000 + number4 * 1000 + number3 * 100 + number2 * 10 + number), enable_word);
+                i++;
             }
+        }
         // }
         overi++;
     }
@@ -1168,62 +1424,62 @@ function randSorobanlevel1E(numb){
     }
 }
 
-function randSorobanlevel1F(numb){
+function randSorobanlevel1F(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 9;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 500000){
+    while (true && i < numb && overi < 500000) {
 
-        var s1 = s%10;
+        var s1 = s % 10;
         var number = generateRandomInteger(-9, 9);
 
-        var s2 = Math.floor((s/10)%10);
+        var s2 = Math.floor((s / 10) % 10);
         var number2 = generateRandomInteger(-9, 9);
 
-        var s3 = Math.floor((s/100)%10);
+        var s3 = Math.floor((s / 100) % 10);
         var number3 = generateRandomInteger(-9, 9);
 
-        var s4 = Math.floor((s/1000)%10);
+        var s4 = Math.floor((s / 1000) % 10);
         var number4 = generateRandomInteger(-9, 9);
 
-        var s5 = Math.floor((s/10000)%10);
+        var s5 = Math.floor((s / 10000) % 10);
         var number5 = generateRandomInteger(-9, 9);
 
-        var s6 = Math.floor((s/10000)%10);
+        var s6 = Math.floor((s / 10000) % 10);
         var number6 = generateRandomInteger(-9, 9);
-        
+
         // if(number != 0 && number2 != 0){
-            // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
-            //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
-            //         s += number * 10 + number2;
-            //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
-            //         i++;
-            //     }
-            // }
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }
 
-            if((0 <= s1 + number  && s1 + number  <= limit) && 
-               (0 <= s2 + number2 && s2 + number2 <= limit) && 
-               (0 <= s3 + number3 && s3 + number3 <= limit) && 
-               (0 <= s4 + number4 && s4 + number4 <= limit) && 
-               (0 <= s5 + number5 && s5 + number5 <= limit) && 
-               (0 <= s6 + number6 && s6 + number6 <= limit) && 
-               ((number >= 0 && number2 >= 0 && number3 >= 0 && number4 >= 0 && number5 >= 0 && number6 > 0) || (number <= 0 && number2 <= 0 && number3 <= 0 && number4 <= 0 && number5 <= 0 && number6 < 0 ))){
+        if ((0 <= s1 + number && s1 + number <= limit) &&
+            (0 <= s2 + number2 && s2 + number2 <= limit) &&
+            (0 <= s3 + number3 && s3 + number3 <= limit) &&
+            (0 <= s4 + number4 && s4 + number4 <= limit) &&
+            (0 <= s5 + number5 && s5 + number5 <= limit) &&
+            (0 <= s6 + number6 && s6 + number6 <= limit) &&
+            ((number >= 0 && number2 >= 0 && number3 >= 0 && number4 >= 0 && number5 >= 0 && number6 > 0) || (number <= 0 && number2 <= 0 && number3 <= 0 && number4 <= 0 && number5 <= 0 && number6 < 0))) {
 
-                if(checkNumberSorobanLevel1(s1, number) && 
-                checkNumberSorobanLevel1(s2, number2) && 
-                checkNumberSorobanLevel1(s3, number3)  && 
+            if (checkNumberSorobanLevel1(s1, number) &&
+                checkNumberSorobanLevel1(s2, number2) &&
+                checkNumberSorobanLevel1(s3, number3) &&
                 checkNumberSorobanLevel1(s4, number4) &&
                 checkNumberSorobanLevel1(s5, number5) &&
-                checkNumberSorobanLevel1(s6, number6)){
+                checkNumberSorobanLevel1(s6, number6)) {
 
-                    s += (number6 * 100000 + number5 * 10000 + number4 * 1000 + number3 * 100 + number2 * 10 + number);
-                    numbers[i] = getNumberFromABS(i, (number6 * 100000 + number5 * 10000 + number4 * 1000 + number3 * 100 + number2 * 10 + number), enable_word);  
-                    i++;
-                }
+                s += (number6 * 100000 + number5 * 10000 + number4 * 1000 + number3 * 100 + number2 * 10 + number);
+                numbers[i] = getNumberFromABS(i, (number6 * 100000 + number5 * 10000 + number4 * 1000 + number3 * 100 + number2 * 10 + number), enable_word);
+                i++;
             }
+        }
         // }
         overi++;
     }
@@ -1236,19 +1492,19 @@ function randSorobanlevel1F(numb){
 }
 
 //
-function randSorobanLeve2A(numb){
+function randSorobanLeve2A(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 5;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 5000){
+    while (true && i < numb && overi < 5000) {
         var number = generateRandomInteger(-9, 9);
-        if(number != 0){
-            if( 0 < s + number && s + number <= limit){
+        if (number != 0) {
+            if (0 < s + number && s + number <= limit) {
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word);  
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
             }
         }
@@ -1261,19 +1517,19 @@ function randSorobanLeve2A(numb){
     }
 }
 
-function randSorobanLeve2B(numb){
+function randSorobanLeve2B(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 9;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 5000){
+    while (true && i < numb && overi < 5000) {
         var number = generateRandomInteger(-9, 9);
-        if(number != 0){
-            if( 0 < s + number && s + number <= limit){
+        if (number != 0) {
+            if (0 < s + number && s + number <= limit) {
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word); 
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
             }
         }
@@ -1286,19 +1542,19 @@ function randSorobanLeve2B(numb){
     }
 }
 
-function randSorobanLeve2C(numb, max = 20){
+function randSorobanLeve2C(numb, max = 20) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = max;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 5000){
+    while (true && i < numb && overi < 5000) {
         var number = generateRandomInteger(-max, max);
-        if(number != 0){
-            if( 0 < s + number && s + number <= limit){
+        if (number != 0) {
+            if (0 < s + number && s + number <= limit) {
                 s += number;
-                numbers[i] = getNumberFromABS(i, number, enable_word); 
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
             }
         }
@@ -1311,19 +1567,19 @@ function randSorobanLeve2C(numb, max = 20){
     }
 }
 
-function randSorobannhan22(numb, max){
+function randSorobannhan22(numb, max) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = max || 20;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 5000){
+    while (true && i < numb && overi < 5000) {
         var number = generateRandomInteger(1, max);
-        if(number != 0){
-            if( 0 < s + number && s + number <= limit){
+        if (number != 0) {
+            if (0 < s + number && s + number <= limit) {
                 s *= number;
-                numbers[i] = getNumberFromABS(i, number, enable_word); 
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
             }
         }
@@ -1336,30 +1592,30 @@ function randSorobannhan22(numb, max){
     }
 }
 
-function randSoroban33(numb){
+function randSoroban33(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 99;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 5000){
+    while (true && i < numb && overi < 5000) {
         var number = generateRandomInteger(-99, 99);
         // var number2 = generateRandomInteger(10,  99);
         // var rand = [number, number2];
         // console.log(rand,generateRandomInteger(0,1),rand[generateRandomInteger(0,1)])
         // number = rand[generateRandomInteger(1,2)];
-        var n1ddigit = number%10;
-        var n2ddigit = Math.floor((number/10)%10);
+        var n1ddigit = number % 10;
+        var n2ddigit = Math.floor((number / 10) % 10);
 
-        var s1 = s%10;
-        var s2 = Math.floor((s/10)%10);
+        var s1 = s % 10;
+        var s2 = Math.floor((s / 10) % 10);
 
 
-        if(number != 0){
-            if((0 <= s1 + n1ddigit && s1 + n1ddigit <= 9) && (0 <= s2 + n2ddigit && s2 + n2ddigit <= 9)){
+        if (number != 0) {
+            if ((0 <= s1 + n1ddigit && s1 + n1ddigit <= 9) && (0 <= s2 + n2ddigit && s2 + n2ddigit <= 9)) {
                 s += number;
-                numbers[i] = getNumberFromABS(i, number, enable_word); 
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
             }
         }
@@ -1372,32 +1628,32 @@ function randSoroban33(numb){
     }
 }
 
-function randSoroban333(numb){
+function randSoroban333(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 99;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 5000){
+    while (true && i < numb && overi < 5000) {
         var number = generateRandomInteger(-999, 999);
         // var number2 = generateRandomInteger(10,  99);
         // var rand = [number, number2];
         // console.log(rand,generateRandomInteger(0,1),rand[generateRandomInteger(0,1)])
         // number = rand[generateRandomInteger(1,2)];
-        var n1ddigit = number%10;
-        var n2ddigit = Math.floor((number/10)%10);
-		var n3ddigit = Math.floor((number/100)%10);
+        var n1ddigit = number % 10;
+        var n2ddigit = Math.floor((number / 10) % 10);
+        var n3ddigit = Math.floor((number / 100) % 10);
 
-        var s1 = s%10;
-        var s2 = Math.floor((s/10)%10);
-		var s3 = Math.floor((s/100)%10);
+        var s1 = s % 10;
+        var s2 = Math.floor((s / 10) % 10);
+        var s3 = Math.floor((s / 100) % 10);
 
 
-        if(number != 0){
-            if((0 <= s1 + n1ddigit && s1 + n1ddigit <= 9) && (0 <= s2 + n2ddigit && s2 + n2ddigit <= 9) && (0 <= s3 + n3ddigit && s3 + n3ddigit <= 9)){
+        if (number != 0) {
+            if ((0 <= s1 + n1ddigit && s1 + n1ddigit <= 9) && (0 <= s2 + n2ddigit && s2 + n2ddigit <= 9) && (0 <= s3 + n3ddigit && s3 + n3ddigit <= 9)) {
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word); 
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
             }
         }
@@ -1410,45 +1666,45 @@ function randSoroban333(numb){
     }
 }
 
-function randSoroban3333(numb){
+function randSoroban3333(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 99;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 5000){
+    while (true && i < numb && overi < 5000) {
         var number = generateRandomInteger(1000, 9999);
-        var number2 = generateRandomInteger(-9999,  -1000);
+        var number2 = generateRandomInteger(-9999, -1000);
         // var rand = [number, number2];
         // console.log(rand,generateRandomInteger(0,1),rand[generateRandomInteger(0,1)])
         // number = rand[generateRandomInteger(1,2)];
-		
-		number = generateRandomInteger(number2,number);
-		console.log(number);
-		
-		if( number <= -1000 || number>= 1000){
-			var n1ddigit = number%10;
-			var n2ddigit = Math.floor((number/10)%10);
-			var n3ddigit = Math.floor((number/100)%10);
-			var n4ddigit = Math.floor((number/1000)%10);
 
-			var s1 = s%10;
-			var s2 = Math.floor((s/10)%10);
-			var s3 = Math.floor((s/100)%10);
-			var s4 = Math.floor((s/1000)%10);
+        number = generateRandomInteger(number2, number);
+        console.log(number);
+
+        if (number <= -1000 || number >= 1000) {
+            var n1ddigit = number % 10;
+            var n2ddigit = Math.floor((number / 10) % 10);
+            var n3ddigit = Math.floor((number / 100) % 10);
+            var n4ddigit = Math.floor((number / 1000) % 10);
+
+            var s1 = s % 10;
+            var s2 = Math.floor((s / 10) % 10);
+            var s3 = Math.floor((s / 100) % 10);
+            var s4 = Math.floor((s / 1000) % 10);
 
 
-			if(number != 0){
-				if((0 <= s1 + n1ddigit && s1 + n1ddigit <= 9) && (0 <= s2 + n2ddigit && s2 + n2ddigit <= 9) && (0 <= s3 + n3ddigit && s3 + n3ddigit <= 9) && (0 <= s4 + n4ddigit && s4 + n4ddigit <= 9)){
-					s += number;
-					numbers[i] = getNumberFromABS(i, number, enable_word); 
-					i++;
-				}
-			}
-		}
-			
-        
+            if (number != 0) {
+                if ((0 <= s1 + n1ddigit && s1 + n1ddigit <= 9) && (0 <= s2 + n2ddigit && s2 + n2ddigit <= 9) && (0 <= s3 + n3ddigit && s3 + n3ddigit <= 9) && (0 <= s4 + n4ddigit && s4 + n4ddigit <= 9)) {
+                    s += number;
+                    numbers[i] = getNumberFromABS(i, number, enable_word);
+                    i++;
+                }
+            }
+        }
+
+
         overi++;
     }
 
@@ -1458,30 +1714,30 @@ function randSoroban3333(numb){
     }
 }
 
-function randSoroban44(numb){
+function randSoroban44(numb) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 99;
-    var i  = 0;
+    var i = 0;
     var overi = 0;
-    while(true && i < numb && overi < 5000){
+    while (true && i < numb && overi < 5000) {
         var number = generateRandomInteger(-99, 99);
         // var number2 = generateRandomInteger(10,  99);
         // var rand = [number, number2];
         // console.log(rand,generateRandomInteger(0,1),rand[generateRandomInteger(0,1)])
         // number = rand[generateRandomInteger(1,2)];
-        var n1ddigit = number%10;
-        var n2ddigit = Math.floor((number/10)%10);
+        var n1ddigit = number % 10;
+        var n2ddigit = Math.floor((number / 10) % 10);
 
-        var s1 = s%10;
-        var s2 = Math.floor((s/10)%10);
+        var s1 = s % 10;
+        var s2 = Math.floor((s / 10) % 10);
 
 
-        if(number != 0){
-            if((0 <= s + number && s + number <= 99)){
+        if (number != 0) {
+            if ((0 <= s + number && s + number <= 99)) {
                 s += number;
-                numbers[i] =  getNumberFromABS(i, number, enable_word); 
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
             }
         }
@@ -1494,38 +1750,38 @@ function randSoroban44(numb){
     }
 }
 
-function randSoroban222(num){
+function randSoroban222(num) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 9;
-    for(var i = 0 ; i < num; i++){
-        var rand = (s < limit? s : limit );
+    for (var i = 0; i < num; i++) {
+        var rand = (s < limit ? s : limit);
         var number = Math.floor(Math.random() * (rand == 0 ? 9 : rand)) + 1;     // returns a random integer from 0 to 9
-        if(s + number > limit){
+        if (s + number > limit) {
             s -= number;
             rands[i] = rand;
-            numbers[i] = getNumberFromABS(i, number, enable_word); 
-        }else{
+            numbers[i] = getNumberFromABS(i, number, enable_word);
+        } else {
             s += number;
             rands[i] = rand;
-            numbers[i] = getNumberFromABS(i, number, enable_word); 
+            numbers[i] = getNumberFromABS(i, number, enable_word);
         }
-        
+
     }
 
     return {
         numbers: numbers,
         s: s
     }
-    
+
 }
 
 function generateRandomInteger(min, max) {
-    return Math.floor(min + Math.random()*(max + 1 - min))
+    return Math.floor(min + Math.random() * (max + 1 - min))
 }
 
-function randSoroban2Number(){
+function randSoroban2Number() {
     var s = 0;
     var s2 = 0;
     var numbers = [];
@@ -1534,61 +1790,61 @@ function randSoroban2Number(){
     var limit = 9;
     var i = 0;
     var times = 0;
-    while(true && i < 36 && times < 5000){
-        var rand = (s < limit? s : limit);
-        var number = generateRandomInteger(10, 99) ;     // returns a random integer from 0 to 9
+    while (true && i < 36 && times < 5000) {
+        var rand = (s < limit ? s : limit);
+        var number = generateRandomInteger(10, 99);     // returns a random integer from 0 to 9
 
         // console.error(number)
-        var n1ddigit = number%10;
-        var n2ddigit = Math.floor((number/10)%10);
-        if((s + n1ddigit >= limit) && (s2 + n2ddigit >= limit)){
-            
-            if(n1ddigit - s < 0 || n2ddigit - s2 < 0){
+        var n1ddigit = number % 10;
+        var n2ddigit = Math.floor((number / 10) % 10);
+        if ((s + n1ddigit >= limit) && (s2 + n2ddigit >= limit)) {
 
-            }else if(s - n1ddigit >= 0 && s2 - n2ddigit >= 0){
+            if (n1ddigit - s < 0 || n2ddigit - s2 < 0) {
+
+            } else if (s - n1ddigit >= 0 && s2 - n2ddigit >= 0) {
                 // console.log(number, n2ddigit, n1ddigit);
                 s -= n1ddigit;
                 s2 -= n2ddigit;
                 rands[i] = rand;
-                numbers[i] = getNumberFromABS(i, number, enable_word); 
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
             }
-            
+
         } else {
-            if((s + n1ddigit <= limit) && (s2 + n2ddigit <= limit)){
+            if ((s + n1ddigit <= limit) && (s2 + n2ddigit <= limit)) {
                 s += n1ddigit;
                 s2 += n2ddigit;
                 rands[i] = rand;
-                numbers[i] = (i==0? " " : " + ") + number;
+                numbers[i] = (i == 0 ? " " : " + ") + number;
                 i++;
-            }else if(s - n1ddigit >= 0 && s2 - n2ddigit >= 0){
+            } else if (s - n1ddigit >= 0 && s2 - n2ddigit >= 0) {
                 // console.log(number, n2ddigit, n1ddigit);
                 s -= n1ddigit;
                 s2 -= n2ddigit;
                 rands[i] = rand;
-                numbers[i] = getNumberFromABS(i, number, enable_word); 
+                numbers[i] = getNumberFromABS(i, number, enable_word);
                 i++;
             }
-            
+
         }
-        
+
         times++;
-            // if(s + number >= limit && s2 + number2 >= limit){
-            //     s -= number;
-            //     s2 -= number2;
-            //     rands[i] = rand;
-            //     numbers[i] = " - " + (number2) + ""+ number;
-            //     i++;
-            // }else if(s + number < limit && s2 + number2 < limit){
-            //     s += number;
-            //     s2 += number2;
-            //     rands[i] = rand;
-            //     numbers[i] = " + " + (number2) + ""+ number;
-            //     i++;
-            // }  
-        
+        // if(s + number >= limit && s2 + number2 >= limit){
+        //     s -= number;
+        //     s2 -= number2;
+        //     rands[i] = rand;
+        //     numbers[i] = " - " + (number2) + ""+ number;
+        //     i++;
+        // }else if(s + number < limit && s2 + number2 < limit){
+        //     s += number;
+        //     s2 += number2;
+        //     rands[i] = rand;
+        //     numbers[i] = " + " + (number2) + ""+ number;
+        //     i++;
+        // }  
+
     }
-    
+
     return {
         numbers: numbers,
         s: s,
@@ -1597,31 +1853,31 @@ function randSoroban2Number(){
 }
 
 
-function randSoroban2Number(num){
+function randSoroban2Number(num) {
     var s = 0;
     var numbers = [];
     var rands = [];
     var limit = 99;
     var times = 0;
-    var i = 0 ;
-    while(true && i < num && times < 5000){
-        var rand = (s < limit? s : limit );
-        var number = generateRandomInteger(1, 99) ;     // returns a random integer from 0 to 9
-        if(s + number >= limit && s - number >= 0){
+    var i = 0;
+    while (true && i < num && times < 5000) {
+        var rand = (s < limit ? s : limit);
+        var number = generateRandomInteger(1, 99);     // returns a random integer from 0 to 9
+        if (s + number >= limit && s - number >= 0) {
             console.error(number)
             s -= number;
             rands[i] = rand;
-            numbers[i] = getNumberFromABS(i, number, enable_word); 
+            numbers[i] = getNumberFromABS(i, number, enable_word);
             i++;
-        }else if(s + number <= limit){
+        } else if (s + number <= limit) {
             console.error(number)
             s += number;
             rands[i] = rand;
-            numbers[i] = getNumberFromABS(i, number, enable_word); 
+            numbers[i] = getNumberFromABS(i, number, enable_word);
             i++;
         }
-        
-        
+
+
         times++;
     }
 
