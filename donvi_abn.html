@@ -39,7 +39,7 @@
                     <label for="slider-1">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer"  step=".1" min="0" max="10" value="3" data-bind="value: timer"/>
             </div>
             <div class="ui-grid-a">
-                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="20" value="4" data-bind="value: numberrange, valueUpdate: 'input'"/>
+                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="100" value="4" data-bind="value: numberrange, valueUpdate: 'input'"/>
             </div>
 
             <div class="ui-grid-a">
@@ -165,9 +165,11 @@
 
                 </div>
                 <!-- ko if: isUseHistory() --> 
-                <div class="guide" style="text-align: center;font-size: 30px;font-weight: bold;">
+                <div class="guide" style="text-align: center;font-size: 55px;font-weight: bold;">
                     <span class="taytrai"  data-bind="text: abacusCol2_GUIDE()"></span> ;
-                    <span class="tayphai" data-bind="text: abacusCol1_GUIDE()" style="padding-left: 20px;color: red;"></span>
+                    <span class="tayphai" data-bind="text: abacusCol1_GUIDE()" style="padding-left: 20px;color: red;"></span> ;
+                    <span class="taytrai" data-bind="text: abacusCol3_GUIDE()" style="padding-left: 20px;color: black;"></span>
+                    <span class="tayphai" data-bind="text: abacusCol4_GUIDE()" style="padding-left: 20px;color: black;"></span>
                 </div>
                 <!-- /ko -->
                 
@@ -195,7 +197,7 @@
             }
 
             [data-role='page']{
-                background-color:white !important ;
+                background-color:darkgray !important ;
                 /* color: white; */
             }
 

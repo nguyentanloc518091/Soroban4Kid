@@ -183,11 +183,28 @@ $(document).ready(function () {
                         self.abacusCol1_GUIDE("Phải: ----------------");
                     }
                 }
+
                 if(storage_result.lt2.length){
                     if(storage_result.lt2[index_storage_result] != null){
                         self.abacusCol2_GUIDE("Trái: " + storage_result.lt2[index_storage_result].data + " = " + storage_result.lt2[index_storage_result].result);
                     }else{
                         self.abacusCol2_GUIDE("Trái: ----------------");
+                    }
+                }
+
+                if(storage_result.lt3.length){
+                    if(storage_result.lt3[index_storage_result] != null){
+                        self.abacusCol3_GUIDE("Trái: " + storage_result.lt3[index_storage_result].data + " = " + storage_result.lt3[index_storage_result].result);
+                    }else{
+                        self.abacusCol3_GUIDE("Trái: ----------------");
+                    }
+                }
+
+                if(storage_result.lt4.length){
+                    if(storage_result.lt4[index_storage_result] != null){
+                        self.abacusCo4_GUIDE("Phải: " + storage_result.lt4[index_storage_result].data + " = " + storage_result.lt4[index_storage_result].result);
+                    }else{
+                        self.abacusCol4_GUIDE("Phải: ----------------");
                     }
                 }
                 
@@ -305,32 +322,45 @@ $(document).ready(function () {
         this.onViewResult = function () {
 
             var results = randSorobanlevel1B(self.numberrange());
-            if (self.level().value == 0) {
+            if (self.level().value == 0) { //2 SỐ - KHÔNG HẾT HỢP
                 result = randSorobanlevel1B(self.numberrange(), self.hard)
-            } else if (self.level().value == 1) {
+
+            } else if (self.level().value == 1) { //3 SỐ - KHÔNG HẾT HỢP
                 results = randSorobanlevel1C(self.numberrange(), self.hard);
-            } else if (self.level().value == 2) {
+
+            } else if (self.level().value == 2) { //4 SỐ - KHÔNG HẾT HỢP
                 results = randSorobanlevel1D(self.numberrange(), self.hard);
-            } else if (self.level().value == 3) {
+
+            } else if (self.level().value == 3) { //2 SỐ - ANH BẠN NHỎ
                 results = randSorobanlevel2B_(self.numberrange(), self.hard);
-            } else if (self.level().value == 4) {
+
+            } else if (self.level().value == 4) { //3 SỐ - ANH BẠN NHỎ
                 results = randSorobanlevel2C_(self.numberrange(), self.hard);
-            } else if (self.level().value == 5) {
+
+            } else if (self.level().value == 5) { //4 SỐ - ANH BẠN NHỎ
                 results = randSorobanlevel1D_(self.numberrange(), self.hard);
-            } else if (self.level().value == 6) {
+
+            } else if (self.level().value == 6) { //2 SỐ - ANH BẠN NHỎ & ANH BẠN LỚN
                 results = randSorobanlevel3B(self.numberrange(), self.hard);
-            } else if (self.level().value == 7) {
+
+            } else if (self.level().value == 7) {  //PHÉP CHIA 0 - 99
                 results = phepchia(self.numberrange(), 99);
-            } else if (self.level().value == 8) {
+
+            } else if (self.level().value == 8) { //2 SỐ - ANH BẠN NHỎ & BÊN PHẢI
                 results = randSorobanlevel2B_phai(self.numberrange(), 99);
-            } else if (self.level().value == 9) {
+
+            } else if (self.level().value == 9) { //2 SỐ - ANH BẠN NHỎ & BÊN TRÁI
                 results = randSorobanlevel2B_trai(self.numberrange(), 99);
-            } else if (self.level().value == 10) {
+
+            } else if (self.level().value == 10) { //2 SỐ - CHỈ CÓ ANH BẠN LỚN +
                 results = randSorobanABL2(self.numberrange(), 99);
-            } else if (self.level().value == 11) {
+
+            } else if (self.level().value == 11) { //2 SỐ - CHỈ CÓ ANH BẠN LỚN -
                 results = randSorobanABL1(self.numberrange(), 99);
-            } else if (self.level().value == 12) {
+
+            } else if (self.level().value == 12) { //2 SỐ - CHỈ CÓ ANH BẠN LỚN KẾT HỢP & ANH BẠN NHỎ
                 results = randSorobanABLKH_ABN_CONG(self.numberrange(), 99);
+
             } else if (self.level().value == -2) {
                 // lý thuyết anh bạn nhỏ
 
@@ -454,7 +484,7 @@ $(document).ready(function () {
 
 
 
-        var length = 9;
+        var length = 4;
         var index = 0;
 
         var excersize = false;

@@ -1,7 +1,7 @@
 
 var audiotts = document.createElement('audio');
 
-console.log("lythuyet", lythuyet(1, 4));
+console.log("lythuyet", lythuyet(8, 9, "ABLKH"));
 function lythuyet(a, b, type = 'ABN') {
     var result = null;
     var lt = [
@@ -15,15 +15,15 @@ function lythuyet(a, b, type = 'ABN') {
         { name: "ABN", index: -2, data: "-2", result: "-5 + 3" },
         { name: "ABN", index: -1, data: "-1", result: "-5 + 4" },
 
-        { name: "ABL", index: 9, data: "9", result: "+10 - 1" },
-        { name: "ABL", index: 8, data: "8", result: "+10 - 2" },
-        { name: "ABL", index: 7, data: "7", result: "+10 - 3" },
-        { name: "ABL", index: 6, data: "6", result: "+10 - 4" },
-        { name: "ABL", index: 5, data: "5", result: "+10 - 5" },
-        { name: "ABL", index: 4, data: "4", result: "+10 - 6" },
-        { name: "ABL", index: 3, data: "3", result: "+10 - 7" },
-        { name: "ABL", index: 2, data: "2", result: "+10 - 8" },
-        { name: "ABL", index: 1, data: "1", result: "+10 - 9" },
+        { name: "ABL", index: 9, data: "+9", result: "+10 - 1" },
+        { name: "ABL", index: 8, data: "+8", result: "+10 - 2" },
+        { name: "ABL", index: 7, data: "+7", result: "+10 - 3" },
+        { name: "ABL", index: 6, data: "+6", result: "+10 - 4" },
+        { name: "ABL", index: 5, data: "+5", result: "+10 - 5" },
+        { name: "ABL", index: 4, data: "+4", result: "+10 - 6" },
+        { name: "ABL", index: 3, data: "+3", result: "+10 - 7" },
+        { name: "ABL", index: 2, data: "+2", result: "+10 - 8" },
+        { name: "ABL", index: 1, data: "+1", result: "+10 - 9" },
 
         { name: "ABL", index: -9, data: "-9", result: "-10 + 1" },
         { name: "ABL", index: -8, data: "-8", result: "-10 + 2" },
@@ -33,28 +33,91 @@ function lythuyet(a, b, type = 'ABN') {
         { name: "ABL", index: -4, data: "-4", result: "-10 + 6" },
         { name: "ABL", index: -3, data: "-3", result: "-10 + 7" },
         { name: "ABL", index: -2, data: "-2", result: "-10 + 8" },
-        { name: "ABL", index: -1, data: "-1", result: "-10 + 9" }
+        { name: "ABL", index: -1, data: "-1", result: "-10 + 9" },
+
+        // 14 - 6 = -10 + 5 - 1
+        // 14 - 7 = -10 + 5 - 2
+        // 14 - 8 = -10 + 5 - 3
+        // 14 - 9 = -10 + 5 - 4
+
+        // 5 + 9 =>  +10 - 5 + 4
+        // 5 + 8 =>  +10 - 5 + 3
+        // 5 + 7 =>  +10 - 5 + 2
+        // 5 + 6 =>  +10 - 5 + 1
+
+        // 6 + 6 =>  +10 - 5 + 1
+        // 6 + 7 =>  +10 - 5 + 2
+        // 6 + 8 =>  +10 - 5 + 3
+
+        // 7 + 6 =>  +10 - 5 + 1
+
+        // 8 + 6 =>  10 - 5 + 1
+
+        { name: "ABLKH", index: "4-6", data: "4-6", result: "-10 + 5 - 1" },
+        { name: "ABLKH", index: "4-7", data: "4-7", result: "-10 + 5 - 2" },
+        { name: "ABLKH", index: "4-8", data: "4-8", result: "-10 + 5 - 3" },
+        { name: "ABLKH", index: "4-9", data: "4-9", result: "-10 + 5 - 4" },
+
+        { name: "ABLKH", index: "5+9", data: "5+9", result: "+10 - 5 + 4" },
+        { name: "ABLKH", index: "5+8", data: "5+8", result: "+10 - 5 + 3" },
+        { name: "ABLKH", index: "5+7", data: "5+7", result: "+10 - 5 + 2" },
+        { name: "ABLKH", index: "5+6", data: "5+6", result: "+10 - 5 + 1" },
+
+        { name: "ABLKH", index: "6+6", data: "6+6", result: "+10 - 5 + 1" },
+        { name: "ABLKH", index: "6+7", data: "6+7", result: "+10 - 5 + 2" },
+        { name: "ABLKH", index: "6+8", data: "6+8", result: "+10 - 5 + 3" },
+
+        { name: "ABLKH", index: "7+6", data: "7+6", result: "+10 - 5 + 1" },
+
+        { name: "ABLKH", index: "8+6", data: "8+6", result: "+10 - 5 + 1" },
 
     ]
 
-    console.log(checkABL(a, b))
-    if (!checkABN(a, b) && type == 'ABN') {
+    if (checkABLKetHop(a, b)) {
         lt.forEach(element => {
             var name = element.name;
-            if (name == 'ABN' && b == element.index) {
+            if (name == 'ABLKH' && (a + "" + b) == element.index) {
                 result = element;
             }
         });
+        if(result != null){
+            return result;
+        }
+        
     }
 
-    if (!checkABL(a, b) && type == 'ABL') {
+    // console.error("checkABN_2",checkABL(a, b), a, b)
+    if (checkABN_2(a, b)) {
+        console.log("anh bạn nhỏ", a, b)
+        lt.forEach(element => {
+            var name = element.name;
+            if (name == 'ABN' && b == element.index) {
+                if (type == 'chuc') {
+                    element.data = element.data.replace("4", "40").replace("3", "30").replace("2", "20").replace("1", "10");
+                    element.result = element.result.replace("5", "50").replace("4", "40").replace("3", "30").replace("2", "20").replace("1", "10");
+                }
+                result = element;
+            }
+        });
+        if(result != null){
+            return result;
+        }
+    }
+
+    if (!checkABL(a, b)) {
         lt.forEach(element => {
             var name = element.name;
             if (name == 'ABL' && b == element.index) {
                 result = element;
             }
         });
+        if(result != null){
+            return result;
+        }
     }
+
+    
+
     return result;
 }
 
@@ -140,7 +203,7 @@ function splitNumber(s) {
     return {
         donvi: s % 10,
         chuc: Math.floor((s / 10) % 10),
-        tram: Math.floor((s / 100) % 10),
+        tram: Math.floor((s / 100) % 10), 
         ngan: Math.floor((s / 1000) % 10),
         chucngan: Math.floor((s / 10000) % 10)
     }
@@ -441,6 +504,11 @@ var enable_word = true;
 //randSorobanABLKH_ABN_CONG
 function randSorobanABLKH_ABN_CONG(numb) {
 
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+
     var s = generateRandomInteger(10, 30);
     var numbers = [];
     var i = 0;
@@ -452,6 +520,9 @@ function randSorobanABLKH_ABN_CONG(numb) {
             var a = s % 10;
             var b = number % 10;
             if ((checkABLKetHop(a, b) || checkABN(a, b)) && 0 < (s + number) && (s + number) < 99) {
+                lt1[i] = lythuyet(a, b, "ABLKH");
+                // lt2[i] = lythuyet(s2, number2);
+
                 s += number;
                 numbers[i++] = getNumberFromABS(i, number, enable_word);
             }
@@ -463,7 +534,11 @@ function randSorobanABLKH_ABN_CONG(numb) {
 
     return {
         numbers: numbers,
-        s: s
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
     }
 }
 
@@ -522,6 +597,11 @@ function randSorobanABLKH_ABN_CONG_AM(numb) {
         s: s
     }
 }
+var dd = parseInt((6%100)/10);
+var s2temp = parseInt((60%100)/10);
+var abc = lythuyet(s2temp, -1, "chuc");
+
+console.log("==============", dd, s2temp, abc)
 
 function randSorobanABL1(numb) {
 
@@ -536,25 +616,38 @@ function randSorobanABL1(numb) {
     var overi = 0;
     numbers[i++] = s;
     while (true && i < numb && overi < 50000) {
-        var number = generateRandomInteger(-19, -1);
-        var a = s % 10;
-        var b = number % 10;
-        if (!checkABLKetHop(a, b) && (s + number) < 99) {
+        var number_ = generateRandomInteger(-19, -1);
+        if(number_ != 0){
+            var a = s % 10;
+            var b = number_ % 10;
+            if (!checkABLKetHop(a, b) && (s + number_) < 99 && (s + number_) >= 0) {
 
-            var s1 = s % 10;
-            var number = number % 10;
+                var s1 = s % 10;
+                var number = number_ % 10;
 
-            var s2 = Math.floor((s / 10) % 10);
-            var number2 = Math.floor((number / 10) % 10);
-            
-            lt1[i] = lythuyet(s1, number, "ABL");
-            lt2[i] = lythuyet(s2, number2, "ABL");
+                var s2 = parseInt((s%100)/10);
+                var number2 = parseInt((number_%100)/10);
 
-            s += number;
-            numbers[i++] = getNumberFromABS(i, number, enable_word);
+                lt1[i] = lythuyet(s1, number, "ABL");
+                lt2[i] = lythuyet(s2, number2, "chuc");
+
+                lt3[i] = null;
+
+                var stemp = s + (number2 * 10);
+                var s2temp = parseInt((stemp%100)/10);
+                if (s2temp - 1 <= 5 && s2 + number2 < 0 ) {
+                    lt3[i] = lythuyet(s2temp, 1, "chuc");
+                    console.error("lon >= 10", s2temp, 1)
+                }
+
+
+                s += number_;
+                numbers[i++] = getNumberFromABS(i, number_, enable_word);
+            }
+
+            overi++;
         }
-
-        overi++;
+        
     }
 
     return {
@@ -580,25 +673,37 @@ function randSorobanABL2(numb) {
     var overi = 0;
     numbers[i++] = s;
     while (true && i < numb && overi < 50000) {
-        var number = generateRandomInteger(1, 19);
-        var a = s % 10;
-        var b = number % 10;
-        if (!checkABLKetHop(a, b) && (s + number) < 99) {
+        var number_ = generateRandomInteger(1, 19);
+        if(number_ != 0){
+            var a = s % 10;
+            var b = number % 10;
+            if (!checkABLKetHop(a, b) && (s + number_) < 99 && (s + number_) >= 0) {
 
-            var s1 = s % 10;
-            var number = number % 10;
+                var s1 = s % 10;
+                var number = number_ % 10;
 
-            var s2 = Math.floor((s / 10) % 10);
-            var number2 = Math.floor((number / 10) % 10);
-            
-            lt1[i] = lythuyet(s1, number, "ABL");
-            lt2[i] = lythuyet(s2, number2, "ABL");
+                var s2 = parseInt((s%100)/10);
+                var number2 = parseInt((number_%100)/10);;
 
-            s += number;
-            numbers[i++] = getNumberFromABS(i, number, enable_word);
+                lt1[i] = lythuyet(s1, number, "ABL");
+                lt2[i] = lythuyet(s2, number2, "chuc");
+
+                lt3[i] = null;
+                var stemp = s + (number2 * 10);
+                var s2temp = parseInt((stemp%100)/10);
+                if (s2temp + 1 > 9) {
+                    lt3[i] = lythuyet(s2temp, 1, "ABL");
+                    console.error("lon >= 10", s2temp, 1)
+                }
+
+
+                s += number_;
+                numbers[i++] = getNumberFromABS(i, number_, enable_word);
+            }
+
+            overi++;
         }
-
-        overi++;
+        
     }
 
     return {
@@ -645,13 +750,53 @@ function randSorobanABL3(numb) {
 
 function checkABL(s, number) {
     var result = false;
+    if(s + number >= 0){
+        if ((s == 0) && (jQuery.inArray(number, [1, 2, 3, 4, 5, 6, 7, 8, 9]) != -1)) {
+            result = true;
+            return result;
+        } else if ((s == 5 || s == 0) && (jQuery.inArray(number, [-5, 1, 2, 3, 4, 0]) != -1)) {
+            result = true;
+            return result;
+        } else if ((s == 6 || s == 0) && (jQuery.inArray(number, [1, 2, 3, -1, -5, -6, 0]) != -1)) {
+            result = true;
+            return result;
+        } else if ((s == 7 || s == 0) && (jQuery.inArray(number, [1, 2, -1, -2, -5, -6, -7, 0]) != -1)) {
+            result = true;
+            return result;
+        } else if ((s == 8 || s == 0) && (jQuery.inArray(number, [1, -1, -2, -3, -5, -6, -7, -8, 0]) != -1)) {
+            result = true;
+            return result;
+        } else if ((s == 9 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, -5, -6, -7, -8, -9, 0]) != -1)) {
+            result = true;
+            return result;
+        } else if ((s == 4 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, 5, 0]) != -1)) {
+            result = true;
+            return result;
+        } else if ((s == 3 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, -3, 5, 6, 0]) != -1)) {
+            result = true;
+            return result;
+        } else if ((s == 2 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, 2, 5, 6, 7, 0]) != -1)) {
+            result = true;
+            return result;
+        } else if ((s == 1 || s == 0) && (jQuery.inArray(number, [-1, 1, 2, 3, 5, 6, 7, 8, 0]) != -1)) {
+            result = true;
+            return result;
+        }
+    }
+    
+    return result;
+}
+
+
+function checkABN(s, number) {
+    var result = false;
     if ((s == 5 || s == 0) && (jQuery.inArray(number, [-5, 1, 2, 3, 4, 0]) != -1)) {
         result = true;
     } else if ((s == 6 || s == 0) && (jQuery.inArray(number, [1, 2, 3, -1, -5, -6, 0]) != -1)) {
         result = true;
     } else if ((s == 7 || s == 0) && (jQuery.inArray(number, [1, 2, -1, -2, -5, -6, -7, 0]) != -1)) {
         result = true;
-    } else if ((s == 8 || s == 0) && (jQuery.inArray(number, [1, -1, -2, -3, -5, -8, 0]) != -1)) {
+    } else if ((s == 8 || s == 0) && (jQuery.inArray(number, [1, -1, -2, -3, -5, -6, -7, -8, 0]) != -1)) {
         result = true;
     } else if ((s == 9 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, -5, -6, -7, -8, -9, 0]) != -1)) {
         result = true;
@@ -667,27 +812,31 @@ function checkABL(s, number) {
     return result;
 }
 
-function checkABN(s, number) {
+function checkABN_2(s, number) {
     var result = false;
-    if ((s == 5 || s == 0) && (jQuery.inArray(number, [-5, 1, 2, 3, 4, 0]) != -1)) {
-        result = true;
-    } else if ((s == 6 || s == 0) && (jQuery.inArray(number, [1, 2, 3, -1, -5, -6, 0]) != -1)) {
-        result = true;
-    } else if ((s == 7 || s == 0) && (jQuery.inArray(number, [1, 2, -1, -2, -5, -6, -7, 0]) != -1)) {
-        result = true;
-    } else if ((s == 8 || s == 0) && (jQuery.inArray(number, [1, -1, -2, -3, -5, -8, 0]) != -1)) {
-        result = true;
-    } else if ((s == 9 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, -5, -6, -7, -8, -9, 0]) != -1)) {
-        result = true;
-    } else if ((s == 4 || s == 0) && (jQuery.inArray(number, [-1, -2, -3, -4, 5, 0]) != -1)) {
-        result = true;
-    } else if ((s == 3 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, -3, 5, 6, 0]) != -1)) {
-        result = true;
-    } else if ((s == 2 || s == 0) && (jQuery.inArray(number, [-1, 1, -2, 2, 5, 6, 7, 0]) != -1)) {
-        result = true;
-    } else if ((s == 1 || s == 0) && (jQuery.inArray(number, [-1, 1, 2, 3, 5, 6, 7, 8, 0]) != -1)) {
-        result = true;
+
+    
+    if(s + number > 0){
+        console.error("++++++", s, number)
+        if ((s == 5) && (jQuery.inArray(number, [-1, -2, -3, -4]) != -1)) {
+            result = true;
+        } else if ((s == 6) && (jQuery.inArray(number, [-4, -3, -2]) != -1)) {
+            result = true;
+        } else if ((s == 7) && (jQuery.inArray(number, [-4, -3]) != -1)) {
+            result = true;
+        } else if ((s == 8) && (jQuery.inArray(number, [-4]) != -1)) {
+            result = true;
+        } else if ((s == 4) && (jQuery.inArray(number, [1, 2, 3, 4]) != -1)) {
+            result = true;
+        } else if ((s == 3) && (jQuery.inArray(number, [2, 3, 4]) != -1)) {
+            result = true;
+        } else if ((s == 2) && (jQuery.inArray(number, [3, 4]) != -1)) {
+            result = true;
+        } else if ((s == 1) && (jQuery.inArray(number, [4]) != -1)) {
+            result = true;
+        }
     }
+    
     return result;
 }
 
@@ -1031,7 +1180,7 @@ function randSorobanlevel2B_trai(numb) {
         if ((0 <= s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number >= 0 && number2 > 0) || (number <= 0 && number2 < 0))) {
             // if(checkABN(s1, number) && checkABN(s2, number2)){
             console.log("=====", Math.floor((s / 10) % 10))
-            lt2[i] = lythuyet(Math.floor((s / 10) % 10), number2);
+            lt2[i] = lythuyet(Math.floor((s / 10) % 10), number2, 'chuc');
             s += (number2 * 10 + number);
             numbers[i] = getNumberFromABS(i, (number2 * 10 + number), enable_word);
             i++;
@@ -1086,7 +1235,7 @@ function randSorobanlevel3B(numb, observer) {
 
                 lt1[i] = lythuyet(s1, number);
                 lt2[i] = lythuyet(s2, number2);
-
+                lt3[i] = null;
                 s += (number2 * 10 + number);
                 numbers[i] = getNumberFromABS(i, (number2 * 10 + number), enable_word);
                 i++;
@@ -1098,7 +1247,15 @@ function randSorobanlevel3B(numb, observer) {
             if ((!checkABLKetHop(s % 10, (number2 * 10 + number) % 10))) {
 
                 lt1[i] = lythuyet(s1, number, "ABL");
-                lt2[i] = lythuyet(s2, number2, "ABL");
+                lt2[i] = lythuyet(s2, number2, "chuc");
+                lt3[i] = null;
+                if (s1 + number > 9) {
+                    var stemp = s + (number2 * 10);
+                    var s2temp = Math.floor((stemp / 10) % 10);
+                    lt3[i] = lythuyet(s2temp, 1, "chuc");
+                    console.error("lon >= 10", s2temp, 1)
+                }
+
 
                 s += (number2 * 10 + number);
                 numbers[i] = getNumberFromABS(i, (number2 * 10 + number), enable_word);
@@ -1131,6 +1288,12 @@ function randSorobanlevel1B(numb) {
     var limit = 9;
     var i = 0;
     var overi = 0;
+
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+
     while (true && i < numb && overi < 500000) {
 
         var s1 = s % 10;
@@ -1162,7 +1325,11 @@ function randSorobanlevel1B(numb) {
     console.log(numbers)
     return {
         numbers: numbers,
-        s: s
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
     }
 }
 
