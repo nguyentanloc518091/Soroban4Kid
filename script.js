@@ -616,7 +616,7 @@ function randSorobanABL1(numb) {
     var overi = 0;
     numbers[i++] = s;
     while (true && i < numb && overi < 50000) {
-        var number_ = generateRandomInteger(-19, -1);
+        var number_ = generateRandomInteger(-69, -1);
         if(number_ != 0){
             var a = s % 10;
             var b = number_ % 10;
@@ -673,7 +673,7 @@ function randSorobanABL2(numb) {
     var overi = 0;
     numbers[i++] = s;
     while (true && i < numb && overi < 50000) {
-        var number_ = generateRandomInteger(1, 19);
+        var number_ = generateRandomInteger(1, 69);
         if(number_ != 0){
             var a = s % 10;
             var b = number % 10;

@@ -484,15 +484,15 @@ $(document).ready(function () {
 
 
 
-        var length = 4;
+        var length = 1;
         var index = 0;
 
-        var excersize = false;
+        var excersize = true;
         var ketqua = [];
-        for (var i = 0; i < 0; i++) {
+        for (var i = 0; i < 100; i++) {
 
             var inte = generateRandomInteger(1, 9);
-            result = randSorobanABLKH_ABN_CONG(length, 20)
+            result = phepnhanndxnd(101,999, 5,9)
             console.log(result)
             if ((result.numbers.length) == length) {
                 var str = "" + (index + 1);

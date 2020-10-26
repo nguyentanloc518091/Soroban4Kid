@@ -54,6 +54,62 @@ function phepchia(){
     }
 }
 
+function phepnhanndxnd(a,b,c,d){
+    var kq = 0;
+    var e = 0;
+    var numbers = [];
+    for(var i = 0; i < 1 ; i++){
+        var s1 = generateRandomInteger(a, b);
+        var s2 = 0;
+        // for(var y = 0; y < 10000; y++){
+            s2 = generateRandomInteger(c, d);
+        // }
+
+        kq = s1 * s2;
+
+        var strCached = kq + "" + s1 + "" + s2;
+        if(cached.indexOf(strCached) === -1){
+            numbers[e++] =  " " + s1 + " x " + s2;
+            cached.push(strCached);
+        }
+        
+
+    }
+
+    return {
+        numbers: numbers,
+        s: kq
+    }
+}
+
+function phepnha2dx2d(){
+    var kq = 0;
+    var e = 0;
+    var numbers = [];
+    for(var i = 0; i < 1 ; i++){
+        var s1 = generateRandomInteger(11, 99);
+        var s2 = 0;
+        // for(var y = 0; y < 10000; y++){
+            s2 = generateRandomInteger(11, 99);
+        // }
+
+        kq = s1 * s2;
+
+        var strCached = kq + "" + s1 + "" + s2;
+        if(cached.indexOf(strCached) === -1){
+            numbers[e++] =  " " + s1 + " x " + s2;
+            cached.push(strCached);
+        }
+        
+
+    }
+
+    return {
+        numbers: numbers,
+        s: kq
+    }
+}
+
 
 function phepnhan(){
     var kq = 0;
