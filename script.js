@@ -5,15 +5,15 @@ console.log("lythuyet", lythuyet(8, 9, "ABLKH"));
 function lythuyet(a, b, type = 'ABN') {
     var result = null;
     var lt = [
-        { name: "ABN", index: 4, data: "+4", result: "+5 - 1" },
-        { name: "ABN", index: 3, data: "+3", result: "+5 - 2" },
-        { name: "ABN", index: 2, data: "+2", result: "+5 - 3" },
-        { name: "ABN", index: 1, data: "+1", result: "+5 - 4" },
+        { name: "ABN", index: 4, data: "+4", result: "+5-1" },
+        { name: "ABN", index: 3, data: "+3", result: "+5-2" },
+        { name: "ABN", index: 2, data: "+2", result: "+5-3" },
+        { name: "ABN", index: 1, data: "+1", result: "+5-4" },
 
-        { name: "ABN", index: -4, data: "-4", result: "-5 + 1" },
-        { name: "ABN", index: -3, data: "-3", result: "-5 + 2" },
-        { name: "ABN", index: -2, data: "-2", result: "-5 + 3" },
-        { name: "ABN", index: -1, data: "-1", result: "-5 + 4" },
+        { name: "ABN", index: -4, data: "-4", result: "-5+1" },
+        { name: "ABN", index: -3, data: "-3", result: "-5+2" },
+        { name: "ABN", index: -2, data: "-2", result: "-5+3" },
+        { name: "ABN", index: -1, data: "-1", result: "-5+4" },
 
         { name: "ABL", index: 9, data: "+9", result: "+10 - 1" },
         { name: "ABL", index: 8, data: "+8", result: "+10 - 2" },
@@ -159,7 +159,8 @@ function readtts(sentence, mute, speakEnglish = false) {
         console.log(sentence, parseInt(sentence), Number.isInteger(parseInt(sentence)));
 
         if (!!sentence) {
-            sentence = sentence.replace("- ", "-")
+            // sentence = sentence.replace("- ", "-");
+            sentence = sentence.replace("- ", "trừ").replace("+ ", "cộng").replace("-", "trừ").replace("+", "cộng").replace(":", "chia");
             console.error(sentence);
             if (speakEnglish) {
                 audiotts.src = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=' + sentence;
@@ -195,6 +196,121 @@ function getNumberFromABS2(i, number, flag = true) {
     return number;
 }
 
+// 1 số
+function randSorobanABLLevel1_phai(numb){
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+
+    var s = generateRandomInteger(1, 9);
+    var numbers = [];
+    var i = 0;
+    var overi = 0;
+    numbers[i++] = s;
+    while (true && i < numb && overi < 50000) {
+        var number = generateRandomInteger(-9, 9);
+        if (number != 0) {
+            if(checkNumberSorobanLevel1(s, number) && s + number >= 0 && s + number <= 9){
+                lt1[i] = lythuyet(s, number, "ABN");
+                s += number;
+                numbers[i++] = getNumberFromABS(i, number, enable_word);
+            }
+            overi++;
+        }
+
+
+        
+    }
+
+    return {
+        numbers: numbers,
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
+    }
+}
+
+function randSorobanABLLevel1_trai(numb){
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+
+    var s = generateRandomInteger(1, 9);
+    var numbers = [];
+    var i = 0;
+    var overi = 0;
+    numbers[i++] = s;
+    while (true && i < numb && overi < 50000) {
+        var number = generateRandomInteger(-9, 9);
+        if (number != 0) {
+            if( checkNumberSorobanLevel1(s, number) && s + number >= 0 && s + number <= 9){
+                lt1[i] = lythuyet(s, number, "CHUC");
+                s += number * 10;
+                numbers[i++] = getNumberFromABS(i, number, enable_word);
+            }
+            overi++;
+            
+        }
+
+
+       
+    }
+
+    return {
+        numbers: numbers,
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
+    }
+}
+
+function randSorobanABLLevel1_tong(numb){
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+
+    var s = generateRandomInteger(1, 9);
+    var numbers = [];
+    var i = 0;
+    var overi = 0;
+    numbers[i++] = s;
+    while (true && i < numb && overi < 50000) {
+        var s1 = s % 10;
+        var number = generateRandomInteger(-9, 9);
+
+        var s2 = Math.floor((s / 10) % 10);
+        var number2 = generateRandomInteger(-9, 9);
+
+        var abc = number2 * 10 + number;
+        if (abc > 0 && (s + abc) < 99) {
+            if( checkNumberSorobanLevel1(s1, number)  && checkNumberSorobanLevel1(s1, number2) && ((s1 + number >= 0 && s1 + number <= 9) && (s2 + number2 >= 0 && s2 + number2 <= 9))){
+                lt1[i] = lythuyet(s1, number, "");
+                lt2[i] = lythuyet(s2, number2, "");
+                s += abc;
+                numbers[i++] = getNumberFromABS(i, abc, false);
+            }
+            overi++;
+            
+        }
+       
+    }
+
+    return {
+        numbers: numbers,
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
+    }
+}
 
 // phep nhan - binh phuong
 
@@ -616,7 +732,7 @@ function randSorobanABL1(numb) {
     var overi = 0;
     numbers[i++] = s;
     while (true && i < numb && overi < 50000) {
-        var number_ = generateRandomInteger(-69, -1);
+        var number_ = generateRandomInteger(-49, -1);
         if(number_ != 0){
             var a = s % 10;
             var b = number_ % 10;
@@ -673,7 +789,7 @@ function randSorobanABL2(numb) {
     var overi = 0;
     numbers[i++] = s;
     while (true && i < numb && overi < 50000) {
-        var number_ = generateRandomInteger(1, 69);
+        var number_ = generateRandomInteger(1, 49);
         if(number_ != 0){
             var a = s % 10;
             var b = number % 10;

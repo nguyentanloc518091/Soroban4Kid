@@ -30,10 +30,10 @@
         
         <div class="ui-grid-solo" data-bind="css: { 'show' : isSetting(), 'hide' : !isSetting()}">
             <div class="ui-grid-a">
-                    <label for="slider-1">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer"  step=".1" min="0" max="10" value="3" data-bind="value: timer"/>
+                    <label for="slider-1">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer"  step=".02" min="0" max="6" value="3" data-bind="value: timer"/>
             </div>
             <div class="ui-grid-a">
-                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="100" value="4" data-bind="value: numberrange, valueUpdate: 'input'"/>
+                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="50" value="4" data-bind="value: numberrange, valueUpdate: 'input'"/>
             </div>
 
             <div class="ui-grid-a">
@@ -130,7 +130,14 @@
             </div>
             
             <!-- /ko -->
-            <!-- ko if: !isLoading() -->
+            <!-- ko if: !isLoading() && level().value < -1 -->
+            <div class="notloading" style="padding-top: 98px;">
+                <div class="ui-grid-a">
+                    <h1  data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll" style="font-size: 157px;"></h1>
+                </div>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: !isLoading() && level().value > -1 -->
             <div class="notloading" style="padding-top: 98px;">
                 <div class="ui-grid-a">
                     <h1 class="ui-block-b" data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll"></h1>

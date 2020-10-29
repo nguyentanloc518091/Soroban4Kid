@@ -95,6 +95,12 @@ $(document).ready(function () {
 
 
         this.availableTopics = ko.observableArray([
+            new Topics("1 SỐ - KHÔNG ANH BẠN NHỎ - BÊN PHẢI", 13),
+            new Topics("1 SỐ - KHÔNG ANH BẠN NHỎ - BÊN TRÁI", 14),
+            new Topics("2 SỐ - KHÔNG ANH BẠN NHỎ", 15),
+
+            new Topics("---------------------------------", -1),
+
             new Topics("2 SỐ - KHÔNG HẾT HỢP", 0),
 
             new Topics("---------------------------------", -1),
@@ -125,12 +131,33 @@ $(document).ready(function () {
 
             new Topics("---------------------------------", -1),
 
-            new Topics("PHÉP CHIA 0 - 99", 7),
+            new Topics("PHÉP NHÂN 1 - 99", -16),
+            new Topics("PHÉP CHIA 1 - 99", -26),
 
             new Topics("---------------------------------", -1),
-            new Topics("LÝ THUYẾT - ANH BẠN NHỎ", -1),
-            new Topics("LÝ THUYẾT - ANH BẠN LỚN", -2),
-            new Topics("LÝ THUYẾT - ANH BẠN KẾT HỢP", -3),
+
+            new Topics("PHÉP NHÂN 2Dx1D", -17),
+            new Topics("PHÉP NHÂN 3Dx1D", -18),
+            new Topics("PHÉP NHÂN 4Dx1D", -19),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("PHÉP NHÂN 2Dx2D", -20),
+            new Topics("PHÉP NHÂN 3Dx2D", -21),
+            new Topics("PHÉP NHÂN 4Dx2D", -22),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("PHÉP NHÂN 3Dx3D", -23),
+            new Topics("PHÉP NHÂN 4Dx3D", -24),
+
+            new Topics("---------------------------------", -1),
+            new Topics("PHÉP NHÂN 4Dx4D", -25),
+
+            new Topics("---------------------------------", -1),
+            new Topics("LÝ THUYẾT - ANH BẠN NHỎ", -2),
+            new Topics("LÝ THUYẾT - ANH BẠN LỚN", -3),
+            new Topics("LÝ THUYẾT - ANH BẠN KẾT HỢP", -4),
         ]);
 
         function tinhtientrinh(timer = 0, second = 5000) {
@@ -167,16 +194,40 @@ $(document).ready(function () {
         var sum = 0;
         var index_storage_result = 0;
         this.tick = function () {
-            console.log("tick")
             playAudio();
-            self.colorText(random_color()[generateRandomInteger(0, 10)]);
+            self.colorText(random_color()[self.number_temp().length%2]);
             var firstElement = self.number_temp.shift();
+
+            if(self.level().value < -1){ // ly thuyet
+                console.log(firstElement)
+                index_storage_result++;
+                if (!!firstElement) {
+                    self.sentence(self.sentence() + 1);
+                    readtts(firstElement, self.mute(), self.speakEnglish());
+                    self.soroban(firstElement)
+
+                    
+                } else {
+                    self.isLastNumber(true);
+                    clearInterval(timerFinal);
+                    clearInterval(interval_timer);
+                }
+
+                if (self.timers() == "00:00:00,000") {
+                    var startTime = Date.now();
+                    timerFinal = setInterval(function () {
+                        var elapsedTime = Date.now() - startTime;
+                        self.timers(sec2time(elapsedTime / 1000));
+                    }, 100);
+                }
+
+                return;
+            }
             
             if (self.number_temp().length >= 0 && !!firstElement) {
-                
 
                 console.error(storage_result);
-                if(storage_result.lt1.length){
+                if(!!storage_result.lt1 && storage_result.lt1.length){
                     if(storage_result.lt1[index_storage_result] != null){
                         self.abacusCol1_GUIDE("Phải: " + storage_result.lt1[index_storage_result].data + " = " + storage_result.lt1[index_storage_result].result);
                     }else{
@@ -184,7 +235,7 @@ $(document).ready(function () {
                     }
                 }
 
-                if(storage_result.lt2.length){
+                if(!!storage_result.lt2 && storage_result.lt2.length){
                     if(storage_result.lt2[index_storage_result] != null){
                         self.abacusCol2_GUIDE("Trái: " + storage_result.lt2[index_storage_result].data + " = " + storage_result.lt2[index_storage_result].result);
                     }else{
@@ -192,7 +243,7 @@ $(document).ready(function () {
                     }
                 }
 
-                if(storage_result.lt3.length){
+                if(!!storage_result.lt3 && storage_result.lt3.length){
                     if(storage_result.lt3[index_storage_result] != null){
                         self.abacusCol3_GUIDE("Trái: " + storage_result.lt3[index_storage_result].data + " = " + storage_result.lt3[index_storage_result].result);
                     }else{
@@ -200,7 +251,7 @@ $(document).ready(function () {
                     }
                 }
 
-                if(storage_result.lt4.length){
+                if(!!storage_result.lt4 && storage_result.lt4.length){
                     if(storage_result.lt4[index_storage_result] != null){
                         self.abacusCo4_GUIDE("Phải: " + storage_result.lt4[index_storage_result].data + " = " + storage_result.lt4[index_storage_result].result);
                     }else{
@@ -217,7 +268,15 @@ $(document).ready(function () {
                 if (!!firstElement) {
                     self.sentence(self.sentence() + 1);
                     readtts(firstElement, self.mute(), self.speakEnglish());
-                    self.soroban(firstElement)
+                    self.soroban(firstElement);
+
+                    // if (firstElement.indexOf("=") == -1) {
+                    //     setTimeout(function(){
+                    //         self.soroban("");
+                    //     }, self.timer() * 1000 - 200);
+                    // }
+                    
+
                 } else {
                     self.isLastNumber(true);
                     clearInterval(interval_timer);
@@ -255,7 +314,7 @@ $(document).ready(function () {
         this.onResultAll = function () {
             self.history();
             if (self.stepbystep()) {
-                if (self.isLastNumber() && !isResult) {
+                if (self.isLastNumber() && !isResult && self.level().value > -1) {
                     self.soroban(final_number);
 
                     self.backgroundblack(true);
@@ -343,7 +402,7 @@ $(document).ready(function () {
             } else if (self.level().value == 6) { //2 SỐ - ANH BẠN NHỎ & ANH BẠN LỚN
                 results = randSorobanlevel3B(self.numberrange(), self.hard);
 
-            } else if (self.level().value == 7) {  //PHÉP CHIA 0 - 99
+            } else if (self.level().value == -26) {  //PHÉP CHIA 0 - 99
                 results = phepchia(self.numberrange(), 99);
 
             } else if (self.level().value == 8) { //2 SỐ - ANH BẠN NHỎ & BÊN PHẢI
@@ -361,15 +420,54 @@ $(document).ready(function () {
             } else if (self.level().value == 12) { //2 SỐ - CHỈ CÓ ANH BẠN LỚN KẾT HỢP & ANH BẠN NHỎ
                 results = randSorobanABLKH_ABN_CONG(self.numberrange(), 99);
 
+            } else if (self.level().value == 13) { //1 SỐ không anh bạn nhỏ
+                results = randSorobanABLLevel1_phai(self.numberrange(), 99);
+
+            }else if (self.level().value == 14) { //1 SỐ không anh bạn nhỏ
+                results = randSorobanABLLevel1_trai(self.numberrange(), 99);
+
+            }else if (self.level().value == 15) { //2 số không anh bạn nhỏ
+                results = randSorobanABLLevel1_tong(self.numberrange(), 99);
+
+            }else if (self.level().value == -16) { //PHÉP NHÂN 1 - 99
+                results = randSorobanPhepNhan1_99(self.numberrange(), 99);
+
+            }else if (self.level().value == -17) { //PHÉP NHÂN 2Dx1D
+                results = phepnhanndxnd(self.numberrange(), 11, 99, 2, 9);
+
+            } else if (self.level().value == -18) { //PHÉP NHÂN 3Dx1D
+                results = phepnhanndxnd(self.numberrange(), 101, 999, 2, 9);
+
+            }else if (self.level().value == -19) { //PHÉP NHÂN 4Dx1D
+                results = phepnhanndxnd(self.numberrange(), 1001, 9999, 2, 9);
+
+            }else if (self.level().value == -20) { //PHÉP NHÂN 2Dx2D
+                results = phepnhanndxnd(self.numberrange(), 11, 99, 11, 99);
+
+            }else if (self.level().value == -21) { //PHÉP NHÂN 3Dx2D
+                results = phepnhanndxnd(self.numberrange(), 101, 999, 11, 99);
+
+            }else if (self.level().value == -22) { //PHÉP NHÂN 4Dx2D
+                results = phepnhanndxnd(self.numberrange(), 1001, 9999, 11, 99);
+
+            }else if (self.level().value == -23) { //PHÉP NHÂN 3Dx3D
+                results = phepnhanndxnd(self.numberrange(), 101, 999, 101, 999);
+
+            }else if (self.level().value == -24) { //PHÉP NHÂN 4Dx3D
+                results = phepnhanndxnd(self.numberrange(), 1001, 9999, 101, 999);
+
+            }else if (self.level().value == -25) { //PHÉP NHÂN 4Dx4D
+                results = phepnhanndxnd(self.numberrange(), 1001, 9999, 1001, 9999);
+
             } else if (self.level().value == -2) {
                 // lý thuyết anh bạn nhỏ
-
+                results = lythuyet_ANH_BAN_NHO(self.numberrange(), 99);
             } else if (self.level().value == -3) {
                 // lý thuyết anh bạn lớn
-
+                results = lythuyet_ANH_BAN_LON(self.numberrange(), 99);
             } else if (self.level().value == -4) {
                 // lý thuyết anh bạn lớn kết hợp
-
+                results = lythuyet_ANH_BAN_NHO_LON(self.numberrange(), 99);
             }
 
             storage_result = results;
@@ -392,14 +490,20 @@ $(document).ready(function () {
 
             self.image_loading("img/img" + generateRandomInteger(1, 31) + ".gif");
 
-
-
-            console.log(results)
             for (var i = 0; i < results.numbers.length; i++) {
                 self.number_temp.push((results.numbers[i] > 0 ? "+" : "") + results.numbers[i]);
             }
 
-            self.number_temp.push("=?");
+            if (self.level().value < -1) {
+                
+            }else{
+                
+
+                self.number_temp.push("=?");
+            }
+            
+
+           
             final_number = results.s;
 
 
@@ -409,28 +513,36 @@ $(document).ready(function () {
             clearInterval(startTick);
             clearInterval(soudStart);
 
-            if (self.stepbystep()) {
-                tinhtientrinh(0, 2000);
-                soudStart = setTimeout(function () {
-                    readtts('Các bạn hãy tập trung nào', true);
-                }, 10);
-                setTimeout(function () {
-                    self.isLoading(false);
+            if (self.level().value < -1) { // ly thuyet anh ban nho
+                self.isLoading(false);
+                // setTimeout(function () {
                     self.tick();
-                }, 2000)
-            } else {
-                tinhtientrinh(6, 5000);
-                soudStart = setTimeout(function () {
-                    readtts(self.hard() + ', Các bạn hãy tập trung nào', true);
-                }, 400);
-                startTick = setTimeout(function () {
-                    self.isLoading(false);
-                    self.tick();
-                    interval_timer = setInterval(self.tick, self.timer() * 1000);
-                    tinhtientrinh(0, self.timer() * 1000 * self.number_temp().length + 4000);
-
-                }, 5000);
+                // }, 2000)
+            }else{
+                if (self.stepbystep()) {
+                    tinhtientrinh(0, 2000);
+                    soudStart = setTimeout(function () {
+                        readtts('Các bạn hãy tập trung nào', true);
+                    }, 10);
+                    setTimeout(function () {
+                        self.isLoading(false);
+                        self.tick();
+                    }, 2000)
+                } else {
+                    tinhtientrinh(6, 5000);
+                    soudStart = setTimeout(function () {
+                        readtts(self.hard() + ', Các bạn hãy tập trung nào', true);
+                    }, 400);
+                    startTick = setTimeout(function () {
+                        self.isLoading(false);
+                        self.tick();
+                        interval_timer = setInterval(self.tick, self.timer() * 1000);
+                        tinhtientrinh(0, self.timer() * 1000 * self.number_temp().length + 4000);
+    
+                    }, 5000);
+                }
             }
+            
 
 
 
@@ -489,7 +601,7 @@ $(document).ready(function () {
 
         var excersize = true;
         var ketqua = [];
-        for (var i = 0; i < 100; i++) {
+        for (var i = 0; i < 0; i++) {
 
             var inte = generateRandomInteger(1, 9);
             result = phepnhanndxnd(101,999, 5,9)
