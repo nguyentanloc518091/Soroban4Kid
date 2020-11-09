@@ -18,12 +18,13 @@ $(document).ready(function () {
         this.colorText = ko.observable("black");
 
         this.timer = ko.observable(3);
-        this.numberrange = ko.observable(4);
+        this.numberrange = ko.observable(10);
         this.level = ko.observable(0);
 
         this.soroban = ko.observable();
         this.isLoading = ko.observable(true);
         this.isLastNumber = ko.observable(false);
+        this.nextSentence = ko.observable(false);
         var interval_timer = null;
         this.sentence = ko.observable(0);
 
@@ -53,6 +54,15 @@ $(document).ready(function () {
         this.abacusCol2_GUIDE = ko.observable("");
         this.abacusCol3_GUIDE = ko.observable("");
         this.abacusCol4_GUIDE = ko.observable("");
+        this.isFlashEffect = ko.observable(false);
+
+        this.level.subscribe(function (newValue) {
+            
+            if(newValue.value <= -1){
+                self.stepbystep(true);
+                $('#cblevel').prop('checked', true).checkboxradio('refresh');
+            }
+        });
 
         function calcuShowHand(number) {
             console.error("---------", number)
@@ -111,6 +121,11 @@ $(document).ready(function () {
 
             new Topics("---------------------------------", -1),
 
+            new Topics("2 SỐ - CHỈ CÓ ANH BẠN LỚN + (dễ)", 16),
+            new Topics("2 SỐ - CHỈ CÓ ANH BẠN LỚN - (dễ)", 17),
+
+            new Topics("---------------------------------", -1),
+
             new Topics("2 SỐ - CHỈ CÓ ANH BẠN LỚN +", 10),
             new Topics("2 SỐ - CHỈ CÓ ANH BẠN LỚN -", 11),
             new Topics("2 SỐ - ANH BẠN NHỎ & ANH BẠN LỚN", 6),
@@ -155,19 +170,48 @@ $(document).ready(function () {
             new Topics("PHÉP NHÂN 4Dx4D", -25),
 
             new Topics("---------------------------------", -1),
+            new Topics("NHÂN 2 SỐ ĐẦU GIỐNG NHAU", -26),
+            new Topics("NHÂN 2 SỐ CUỐI GIỐNG NHAU", -27),
+            new Topics("NHÂN 2dx55", -28),
+            new Topics("NHÂN 102x109", -29),
+            new Topics("NHÂN 4dx55", -29),
+            new Topics("NHÂN 4dx5", -30),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("PHÉP CHIA 3Dx1D", -31),
+            new Topics("PHÉP CHIA 4Dx1D", -32),
+            new Topics("PHÉP CHIA 5Dx1D", -33),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("PHÉP NHÂN 4Dx2D", -34),
+            new Topics("PHÉP NHÂN 5Dx2D", -35),
+            new Topics("PHÉP NHÂN 6Dx2D", -36),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("PHÉP NHÂN 6Dx3D", -37),
+            new Topics("PHÉP NHÂN 7Dx3D", -38),
+
+            new Topics("---------------------------------", -1),
+            new Topics("PHÉP NHÂN 8Dx4D", -39),
+
+            new Topics("---------------------------------", -1),
             new Topics("LÝ THUYẾT - ANH BẠN NHỎ", -2),
             new Topics("LÝ THUYẾT - ANH BẠN LỚN", -3),
             new Topics("LÝ THUYẾT - ANH BẠN KẾT HỢP", -4),
         ]);
 
+        var status_tien_trinh = 0;
         function tinhtientrinh(timer = 0, second = 5000) {
             var solan = second / 100;
             self.percent(100);
-            var abc = setInterval(function () {
+            console.error("-------------", timer, second);
+            status_tien_trinh = setInterval(function () {
                 self.percent(100 - (100 / solan) * timer);
                 if (self.percent() <= 0 || timer >= solan) {
-
-                    clearInterval(abc);
+                    clearInterval(status_tien_trinh);
                 }
                 timer += 1;
             }, 100)
@@ -195,10 +239,10 @@ $(document).ready(function () {
         var index_storage_result = 0;
         this.tick = function () {
             playAudio();
-            self.colorText(random_color()[self.number_temp().length%2]);
+            self.colorText(random_color()[self.number_temp().length % 2]);
             var firstElement = self.number_temp.shift();
 
-            if(self.level().value < -1){ // ly thuyet
+            if (self.level().value < -1) { // ly thuyet
                 console.log(firstElement)
                 index_storage_result++;
                 if (!!firstElement) {
@@ -206,9 +250,10 @@ $(document).ready(function () {
                     readtts(firstElement, self.mute(), self.speakEnglish());
                     self.soroban(firstElement)
 
-                    
+
                 } else {
                     self.isLastNumber(true);
+                    self.nextSentence(true);
                     clearInterval(timerFinal);
                     clearInterval(interval_timer);
                 }
@@ -223,44 +268,44 @@ $(document).ready(function () {
 
                 return;
             }
-            
+
             if (self.number_temp().length >= 0 && !!firstElement) {
 
                 console.error(storage_result);
-                if(!!storage_result.lt1 && storage_result.lt1.length){
-                    if(storage_result.lt1[index_storage_result] != null){
+                if (!!storage_result.lt1 && storage_result.lt1.length) {
+                    if (storage_result.lt1[index_storage_result] != null) {
                         self.abacusCol1_GUIDE("Phải: " + storage_result.lt1[index_storage_result].data + " = " + storage_result.lt1[index_storage_result].result);
-                    }else{
+                    } else {
                         self.abacusCol1_GUIDE("Phải: ----------------");
                     }
                 }
 
-                if(!!storage_result.lt2 && storage_result.lt2.length){
-                    if(storage_result.lt2[index_storage_result] != null){
+                if (!!storage_result.lt2 && storage_result.lt2.length) {
+                    if (storage_result.lt2[index_storage_result] != null) {
                         self.abacusCol2_GUIDE("Trái: " + storage_result.lt2[index_storage_result].data + " = " + storage_result.lt2[index_storage_result].result);
-                    }else{
+                    } else {
                         self.abacusCol2_GUIDE("Trái: ----------------");
                     }
                 }
 
-                if(!!storage_result.lt3 && storage_result.lt3.length){
-                    if(storage_result.lt3[index_storage_result] != null){
+                if (!!storage_result.lt3 && storage_result.lt3.length) {
+                    if (storage_result.lt3[index_storage_result] != null) {
                         self.abacusCol3_GUIDE("Trái: " + storage_result.lt3[index_storage_result].data + " = " + storage_result.lt3[index_storage_result].result);
-                    }else{
+                    } else {
                         self.abacusCol3_GUIDE("Trái: ----------------");
                     }
                 }
 
-                if(!!storage_result.lt4 && storage_result.lt4.length){
-                    if(storage_result.lt4[index_storage_result] != null){
+                if (!!storage_result.lt4 && storage_result.lt4.length) {
+                    if (storage_result.lt4[index_storage_result] != null) {
                         self.abacusCo4_GUIDE("Phải: " + storage_result.lt4[index_storage_result].data + " = " + storage_result.lt4[index_storage_result].result);
-                    }else{
+                    } else {
                         self.abacusCol4_GUIDE("Phải: ----------------");
                     }
                 }
-                
-                
-                
+
+
+
                 // self.abacusCol3_GUIDE(storage_result.lt3[index_storage_result]);
                 // self.abacusCol4_GUIDE(storage_result.lt4[index_storage_result]);
 
@@ -270,12 +315,15 @@ $(document).ready(function () {
                     readtts(firstElement, self.mute(), self.speakEnglish());
                     self.soroban(firstElement);
 
-                    // if (firstElement.indexOf("=") == -1) {
-                    //     setTimeout(function(){
-                    //         self.soroban("");
-                    //     }, self.timer() * 1000 - 200);
-                    // }
-                    
+                    if (self.isFlashEffect()) {
+                        if (firstElement.indexOf("=") == -1) {
+                            setTimeout(function () {
+                                self.soroban("");
+                            }, self.timer() * 1000 - 100);
+                        }
+                    }
+
+
 
                 } else {
                     self.isLastNumber(true);
@@ -314,20 +362,39 @@ $(document).ready(function () {
         this.onResultAll = function () {
             self.history();
             if (self.stepbystep()) {
+                if (self.nextSentence()) {
+                    final_number = -0001;
+                    self.onViewResult();
+                    self.nextSentence(false);
+                   
+                    return;
+                }
+
                 if (self.isLastNumber() && !isResult && self.level().value > -1) {
+
                     self.soroban(final_number);
 
-                    self.backgroundblack(true);
+                    // self.backgroundblack(true);
                     readtts("Bằng " + final_number, true);
 
                     self.history(self.history() + final_number);
                     isResult = true;
+                    self.nextSentence(true);
                     clearInterval(timerFinal);
+                    final_number = -0001;
+                    
                 } else {
                     self.tick();
                 }
 
+
+
             } else {
+
+                if (self.isLastNumber() && final_number == -0001){
+                    self.onViewResult();
+                    self.nextSentence(false);
+                }
 
                 if (self.isLastNumber() && !isResult) {
 
@@ -341,7 +408,6 @@ $(document).ready(function () {
                     clearInterval(timerFinal);
                     isResult = true;
                     runtimer = setTimeout(function () {
-
                         readtts('Các bạn hãy cố gắng lên nào, mình sắp về đích rồi', false);
 
                         // fireworksField = $('.notloading').fireworks({
@@ -359,11 +425,17 @@ $(document).ready(function () {
                         //     })
                         // }, 1000)
                     }, 2500)
-
+                    final_number = -0001;
+                    clearInterval(status_tien_trinh)
 
                 }
+
+                
+
+
             }
 
+            
 
 
         }
@@ -376,13 +448,60 @@ $(document).ready(function () {
         this.isTimer = ko.observable(false);
         this.hard = ko.observable("bài này khá dễ");
 
-        var final_number = 0;
+        var final_number = -0001;
         var storage_result = [];
         this.onViewResult = function () {
 
-            var results = randSorobanlevel1B(self.numberrange());
+            //reset
+            sum = 0;
+            console.log(self.level())
+            self.isSetting(false);
+            self.isLoading(true);
+            self.isLastNumber(false);
+            self.sentence(0);
+            isResult = false;
+            self.number_temp.removeAll();
+            self.history("");
+            self.timers("00:00:00,000")
+            index_storage_result = 0;
+
+            if (!self.isLastNumber() && !isResult && final_number != -0001) {
+                self.isLoading(false);
+                self.soroban(final_number);
+
+                readtts("Bằng " + final_number, true);
+
+                self.history(self.history() + final_number);
+                isResult = true;
+
+                clearInterval(timerFinal);
+                isResult = true;
+                runtimer = setTimeout(function () {
+                    readtts('Các bạn hãy cố gắng lên nào, mình sắp về đích rồi', false);
+
+                    // fireworksField = $('.notloading').fireworks({
+                    //     sound:true,// sound effect
+                    //     opacity: 0.9,
+                    //     width:'100%',
+                    //     height:'100%'
+                    // });
+
+
+                    // setTimeout(function(){
+                    //     $('#fireworksField').on("click", function(){
+                    //         fireworksField.destroy()
+                    //         $(this).remove();
+                    //     })
+                    // }, 1000)
+                }, 2500)
+
+                final_number = -0001;
+                return;
+            }
+
+            var results;
             if (self.level().value == 0) { //2 SỐ - KHÔNG HẾT HỢP
-                result = randSorobanlevel1B(self.numberrange(), self.hard)
+                results = randSorobanlevel1B(self.numberrange(), self.hard)
 
             } else if (self.level().value == 1) { //3 SỐ - KHÔNG HẾT HỢP
                 results = randSorobanlevel1C(self.numberrange(), self.hard);
@@ -420,43 +539,49 @@ $(document).ready(function () {
             } else if (self.level().value == 12) { //2 SỐ - CHỈ CÓ ANH BẠN LỚN KẾT HỢP & ANH BẠN NHỎ
                 results = randSorobanABLKH_ABN_CONG(self.numberrange(), 99);
 
-            } else if (self.level().value == 13) { //1 SỐ không anh bạn nhỏ
+            } else if (self.level().value == 13) { //1 SỐ không anh bạn nhỏ phai
                 results = randSorobanABLLevel1_phai(self.numberrange(), 99);
 
-            }else if (self.level().value == 14) { //1 SỐ không anh bạn nhỏ
+            } else if (self.level().value == 14) { //1 SỐ không anh bạn nhỏ trai
                 results = randSorobanABLLevel1_trai(self.numberrange(), 99);
 
-            }else if (self.level().value == 15) { //2 số không anh bạn nhỏ
+            } else if (self.level().value == 15) { //2 số không anh bạn nhỏ
                 results = randSorobanABLLevel1_tong(self.numberrange(), 99);
 
-            }else if (self.level().value == -16) { //PHÉP NHÂN 1 - 99
+            } else if (self.level().value == 16) { //2 SỐ - CHỈ CÓ ANH BẠN LỚN + (dễ)
+                results = randSorobanABL2(self.numberrange(), 1, 9, 1, 9);
+
+            } else if (self.level().value == 17) { //2 SỐ - CHỈ CÓ ANH BẠN LỚN - (dễ)
+                results = randSorobanABL1(self.numberrange(), 99, 90, -9, -1);
+
+            } else if (self.level().value == -16) { //PHÉP NHÂN 1 - 99
                 results = randSorobanPhepNhan1_99(self.numberrange(), 99);
 
-            }else if (self.level().value == -17) { //PHÉP NHÂN 2Dx1D
+            } else if (self.level().value == -17) { //PHÉP NHÂN 2Dx1D
                 results = phepnhanndxnd(self.numberrange(), 11, 99, 2, 9);
 
             } else if (self.level().value == -18) { //PHÉP NHÂN 3Dx1D
                 results = phepnhanndxnd(self.numberrange(), 101, 999, 2, 9);
 
-            }else if (self.level().value == -19) { //PHÉP NHÂN 4Dx1D
+            } else if (self.level().value == -19) { //PHÉP NHÂN 4Dx1D
                 results = phepnhanndxnd(self.numberrange(), 1001, 9999, 2, 9);
 
-            }else if (self.level().value == -20) { //PHÉP NHÂN 2Dx2D
+            } else if (self.level().value == -20) { //PHÉP NHÂN 2Dx2D
                 results = phepnhanndxnd(self.numberrange(), 11, 99, 11, 99);
 
-            }else if (self.level().value == -21) { //PHÉP NHÂN 3Dx2D
+            } else if (self.level().value == -21) { //PHÉP NHÂN 3Dx2D
                 results = phepnhanndxnd(self.numberrange(), 101, 999, 11, 99);
 
-            }else if (self.level().value == -22) { //PHÉP NHÂN 4Dx2D
+            } else if (self.level().value == -22) { //PHÉP NHÂN 4Dx2D
                 results = phepnhanndxnd(self.numberrange(), 1001, 9999, 11, 99);
 
-            }else if (self.level().value == -23) { //PHÉP NHÂN 3Dx3D
+            } else if (self.level().value == -23) { //PHÉP NHÂN 3Dx3D
                 results = phepnhanndxnd(self.numberrange(), 101, 999, 101, 999);
 
-            }else if (self.level().value == -24) { //PHÉP NHÂN 4Dx3D
+            } else if (self.level().value == -24) { //PHÉP NHÂN 4Dx3D
                 results = phepnhanndxnd(self.numberrange(), 1001, 9999, 101, 999);
 
-            }else if (self.level().value == -25) { //PHÉP NHÂN 4Dx4D
+            } else if (self.level().value == -25) { //PHÉP NHÂN 4Dx4D
                 results = phepnhanndxnd(self.numberrange(), 1001, 9999, 1001, 9999);
 
             } else if (self.level().value == -2) {
@@ -473,18 +598,7 @@ $(document).ready(function () {
             storage_result = results;
 
 
-            //reset
-            sum = 0;
-            console.log(self.level())
-            self.isSetting(false);
-            self.isLoading(true);
-            self.isLastNumber(false);
-            self.sentence(0);
-            isResult = false;
-            self.number_temp.removeAll();
-            self.history("");
-            self.timers("00:00:00,000")
-            index_storage_result = 0;
+
 
             self.hard("bài này khá dễ");
 
@@ -495,15 +609,13 @@ $(document).ready(function () {
             }
 
             if (self.level().value < -1) {
-                
-            }else{
-                
 
+            } else {
                 self.number_temp.push("=?");
             }
-            
 
-           
+
+
             final_number = results.s;
 
 
@@ -512,13 +624,20 @@ $(document).ready(function () {
             clearInterval(timerFinal);
             clearInterval(startTick);
             clearInterval(soudStart);
+            clearInterval(status_tien_trinh)
 
             if (self.level().value < -1) { // ly thuyet anh ban nho
-                self.isLoading(false);
-                // setTimeout(function () {
+                tinhtientrinh(6, 5000);
+                soudStart = setTimeout(function () {
+                    readtts(self.hard() + ', Các bạn hãy tập trung nào', true);
+                }, 400);
+                startTick = setTimeout(function () {
+                    self.isLoading(false);
                     self.tick();
-                // }, 2000)
-            }else{
+                    tinhtientrinh(0, self.timer() * 1000 * self.number_temp().length + 4000);
+                }, 5000);
+
+            } else {
                 if (self.stepbystep()) {
                     tinhtientrinh(0, 2000);
                     soudStart = setTimeout(function () {
@@ -538,11 +657,11 @@ $(document).ready(function () {
                         self.tick();
                         interval_timer = setInterval(self.tick, self.timer() * 1000);
                         tinhtientrinh(0, self.timer() * 1000 * self.number_temp().length + 4000);
-    
+
                     }, 5000);
                 }
             }
-            
+
 
 
 
@@ -590,6 +709,7 @@ $(document).ready(function () {
             clearInterval(startTick);
 
             audiotts.pause();
+            final_number = -0001;
 
         }
 
@@ -604,7 +724,7 @@ $(document).ready(function () {
         for (var i = 0; i < 0; i++) {
 
             var inte = generateRandomInteger(1, 9);
-            result = phepnhanndxnd(101,999, 5,9)
+            result = phepnhanndxnd(101, 999, 5, 9)
             console.log(result)
             if ((result.numbers.length) == length) {
                 var str = "" + (index + 1);

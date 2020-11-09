@@ -33,7 +33,7 @@
                     <label for="slider-1">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer"  step=".02" min="0" max="6" value="3" data-bind="value: timer"/>
             </div>
             <div class="ui-grid-a">
-                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="50" value="4" data-bind="value: numberrange, valueUpdate: 'input'"/>
+                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="100" value="10" data-bind="value: numberrange, valueUpdate: 'input'"/>
             </div>
 
             <div class="ui-grid-a">
@@ -53,6 +53,11 @@
                         <input type="checkbox" name="checkbox-0 " data-bind="checked: isTimer" >Thời gian
                     </label>
                 </div>
+                <div class="ui-block-b">
+                    <label>
+                        <input type="checkbox" name="checkbox-0 " data-bind="checked: isFlashEffect" >Hiệu ứng
+                    </label>
+                </div>
             </div>
             <div  class="ui-grid-d">
                 <div class="ui-block-a">
@@ -62,7 +67,7 @@
                 </div>
                 <div  class="ui-block-b">
                     <label>
-                        <input type="checkbox" name="checkbox-0 " data-bind="checked: stepbystep" > Từng Bước
+                        <input type="checkbox" name="checkbox-2 " id="cblevel" class="cblevel"  data-bind="checked: stepbystep" > Từng Bước
                     </label>
                 </div>
                 <div  class="ui-block-c">
@@ -158,8 +163,6 @@
                             <img data-bind="attr: { src: abacusCol1() }" style="height: 264px;" />
                             <!-- ko if: isUseHistory() -->  
                                 <div style="font-size: 40px;color: red;" data-bind="text: history"></div>
-
-                                
                             <!-- /ko -->
                         </div>
                     <!-- /ko -->
@@ -212,7 +215,7 @@
 
             h1{
                 text-align: center;
-                font-size: 300px;
+                font-size: 250px;
             }
 
             h1.red{

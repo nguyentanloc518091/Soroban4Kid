@@ -211,7 +211,7 @@ function randSorobanABLLevel1_phai(numb){
     while (true && i < numb && overi < 50000) {
         var number = generateRandomInteger(-9, 9);
         if (number != 0) {
-            if(checkNumberSorobanLevel1(s, number) && s + number >= 0 && s + number <= 9){
+            if(checkNumberSorobanLevel1(s, number) && s + number > 0 && s + number <= 9){
                 lt1[i] = lythuyet(s, number, "ABN");
                 s += number;
                 numbers[i++] = getNumberFromABS(i, number, enable_word);
@@ -234,12 +234,13 @@ function randSorobanABLLevel1_phai(numb){
 }
 
 function randSorobanABLLevel1_trai(numb){
+    
     var lt1 = [];
     var lt2 = [];
     var lt3 = [];
     var lt4 = [];
 
-    var s = generateRandomInteger(1, 9);
+    var s = generateRandomInteger(10, 40);
     var numbers = [];
     var i = 0;
     var overi = 0;
@@ -247,19 +248,20 @@ function randSorobanABLLevel1_trai(numb){
     while (true && i < numb && overi < 50000) {
         var number = generateRandomInteger(-9, 9);
         if (number != 0) {
-            if( checkNumberSorobanLevel1(s, number) && s + number >= 0 && s + number <= 9){
-                lt1[i] = lythuyet(s, number, "CHUC");
+            var s2 = Math.floor((s / 10) % 10);
+            if( checkNumberSorobanLevel1(s2, number) && s2 + number > 0 && s2 + number <= 9){
+                lt1[i] = lythuyet(s, number * 10, "CHUC");
                 s += number * 10;
-                numbers[i++] = getNumberFromABS(i, number, enable_word);
+                numbers[i++] = getNumberFromABS(i, number * 10, enable_word);
+
+                console.log(number)
             }
             overi++;
             
         }
-
-
-       
     }
 
+    console.log(numbers)
     return {
         numbers: numbers,
         s: s,
@@ -719,24 +721,24 @@ var abc = lythuyet(s2temp, -1, "chuc");
 
 console.log("==============", dd, s2temp, abc)
 
-function randSorobanABL1(numb) {
+function randSorobanABL1(numb, start1 = 70, start2 = 90, start3 = -49, start4 = -1) {
 
     var lt1 = [];
     var lt2 = [];
     var lt3 = [];
     var lt4 = [];
 
-    var s = generateRandomInteger(70, 99);
+    var s = generateRandomInteger(start1, start2);
     var numbers = [];
     var i = 0;
     var overi = 0;
     numbers[i++] = s;
     while (true && i < numb && overi < 50000) {
-        var number_ = generateRandomInteger(-49, -1);
+        var number_ = generateRandomInteger(start3, start4);
         if(number_ != 0){
             var a = s % 10;
             var b = number_ % 10;
-            if (!checkABLKetHop(a, b) && (s + number_) < 99 && (s + number_) >= 0) {
+            if ((s + number_) < 99 && (s + number_) >= 0) {
 
                 var s1 = s % 10;
                 var number = number_ % 10;
@@ -777,23 +779,23 @@ function randSorobanABL1(numb) {
 }
 
 
-function randSorobanABL2(numb) {
+function randSorobanABL2(numb, start1 = 10, start2 = 30, start3 = 1, start4 = 49) {
     var lt1 = [];
     var lt2 = [];
     var lt3 = [];
     var lt4 = [];
 
-    var s = generateRandomInteger(10, 30);
+    var s = generateRandomInteger(start1, start2);
     var numbers = [];
     var i = 0;
     var overi = 0;
     numbers[i++] = s;
     while (true && i < numb && overi < 50000) {
-        var number_ = generateRandomInteger(1, 49);
+        var number_ = generateRandomInteger(start3, start4);
         if(number_ != 0){
             var a = s % 10;
             var b = number % 10;
-            if (!checkABLKetHop(a, b) && (s + number_) < 99 && (s + number_) >= 0) {
+            if ((s + number_) < 999 && (s + number_) >= 0) {
 
                 var s1 = s % 10;
                 var number = number_ % 10;
