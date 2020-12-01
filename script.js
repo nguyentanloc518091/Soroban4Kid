@@ -1,7 +1,48 @@
 
 var audiotts = document.createElement('audio');
 
-console.log("lythuyet", lythuyet(8, 9, "ABLKH"));
+//No easing
+function constant (duration, range, current) {
+    return duration / range;
+  }
+  
+  //Linear easing
+  function linear (duration, range, current) {
+    return ((duration * 2) / Math.pow(range, 2)) * current;
+  }
+  
+  //Quadratic easing
+  function quadratic (duration, range, current) {
+    return ((duration * 3) / Math.pow(range, 3)) * Math.pow(current, 2);
+  }
+  
+  function animateValue(id, start, duration, easing) {
+    var end = parseInt(document.getElementById(id).textContent, 10);
+    var range = end - start;
+    var current = start;
+    var increment = end > start? 1 : -1;
+    var obj = document.getElementById(id);
+    var startTime = new Date();
+    var offset = 1;
+    var remainderTime = 0;
+    
+    var step = function() {
+      current += increment;
+      obj.innerHTML = current;
+      
+      if (current != end) {
+        setTimeout(step, easing(duration, range, current));
+      }
+      else {
+        console.log('Easing: ', easing);
+        console.log('Elapsed time: ', new Date() - startTime)
+        console.log('');
+      }
+    };
+    
+    setTimeout(step, easing(duration, range, start));
+  }
+  
 function lythuyet(a, b, type = 'ABN') {
     var result = null;
     var lt = [
@@ -620,6 +661,41 @@ function getNumberFromABS(i, number, flag = true) {
 var enable_word = true;
 
 //randSorobanABLKH_ABN_CONG
+function randSorobanABLKH_ABN_CONG2(numb) {
+
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+
+    var s = generateRandomInteger(1, 20);
+    var numbers = [];
+    var i = 0;
+    var overi = 0;
+    numbers[i++] = s;
+    while (true && i < numb && overi < 500) {
+        var number = generateRandomInteger(1, 20);
+        if (number != 0) {
+            if ((s + number) <= 99) {
+                s += number;
+                numbers[i++] = getNumberFromABS(i, number, enable_word);
+            }
+        }
+
+
+        overi++;
+    }
+
+    return {
+        numbers: numbers,
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
+    }
+}
+
 function randSorobanABLKH_ABN_CONG(numb) {
 
     var lt1 = [];
@@ -1398,6 +1474,47 @@ function randSorobanlevel3B(numb, observer) {
         lt4: lt4
     }
 }
+
+function randSorobanlevelN(numb, a, b, c, d) {
+    var s = 0;
+    var numbers = [];
+    var rands = [];
+    var limit = 9;
+    var i = 0;
+    var overi = 0;
+
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+
+    s = generateRandomInteger(a, b);
+    numbers[i] = s;
+    while (true && i < numb && overi < 500000) {
+
+        var number2 = generateRandomInteger(c, d);
+        if(s + number2 >= 0){
+            s += (number2 );
+            i++;
+            numbers[i] = getNumberFromABS(i, (number2), enable_word);
+            
+        }
+        
+        overi++;
+    }
+
+    console.log(numbers)
+    return {
+        numbers: numbers,
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
+    }
+}
+
+
 
 function randSorobanlevel1B(numb) {
     var s = 0;

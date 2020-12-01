@@ -237,6 +237,34 @@ function phepchia(number) {
     }
 }
 
+function phepchiadxnd(number, a, b, c, d) {
+    var kq = 0;
+    var e = 0;
+    var numbers = [];
+    for (var i = 0; i < number; i++) {
+        var s1 = generateRandomInteger(a, b);
+        var s2 = 0;
+        s2 = generateRandomInteger(c, d);
+
+        kq = s1 * s2;
+
+        var strCached = kq + "" + s1 + "" + s2;
+        if (cached.indexOf(strCached) === -1) {
+            numbers[e++] = "  " + kq + " : " + s2;
+            // numbers[e++] = " = " + s1;
+            cached.push(strCached);
+        }
+
+
+    }
+
+    return {
+        numbers: numbers,
+        s: s2
+    }
+}
+
+
 function phepnhanndxnd(number, a, b, c, d) {
     var kq = 0;
     var e = 0;
@@ -253,11 +281,37 @@ function phepnhanndxnd(number, a, b, c, d) {
         var strCached = kq + "" + s1 + "" + s2;
         if (cached.indexOf(strCached) === -1) {
             numbers[e++] = " " + s1 + " x " + s2;
-            numbers[e++] = "=" + kq;
+            // numbers[e++] = "=" + kq;
             cached.push(strCached);
         }
+    }
 
+    return {
+        numbers: numbers,
+        s: kq
+    }
+}
 
+function phepnhanndxnd_less(number, a, b, c, d) {
+    var kq = 0;
+    var e = 0;
+    var numbers = [];
+    for (var i = 0; i < number; i++) {
+        var s1 = generateRandomInteger(a, b);
+        var s2 = 0;
+        // for(var y = 0; y < 10000; y++){
+        s2 = generateRandomInteger(c, d);
+        // }
+
+        kq = s1 * s2;
+
+        var abc = (kq + generateRandomInteger(5, 9));
+        var strCached = abc + "" + s1 + "" + s2;
+        if (cached.indexOf(strCached) === -1) {
+            numbers[e++] = " " + s1 + " x " + "............. <= " + abc;
+            // numbers[e++] = "=" + kq;
+            cached.push(strCached);
+        }
     }
 
     return {

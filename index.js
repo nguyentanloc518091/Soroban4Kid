@@ -1,5 +1,11 @@
 $(document).ready(function () {
 
+    function flipNumber(number, onFlip){
+        $("#value3").text(0);
+        $("#value3").flipCounterInit({speed: 0.6, onFlip: onFlip});
+        $("#value3").flipCounterUpdate(number);
+    }
+
     var Topics = function (name, value, type = 'basic', description = '') {
         this.name = name;
         this.value = value;
@@ -29,6 +35,7 @@ $(document).ready(function () {
         this.sentence = ko.observable(0);
 
         this.mute = ko.observable(false);
+        this.mute2 = ko.observable(false);
 
         this.history = ko.observable("");
 
@@ -143,6 +150,30 @@ $(document).ready(function () {
 
             new Topics("4 SỐ - KHÔNG HẾT HỢP", 2),
             new Topics("4 SỐ - ANH BẠN NHỎ", 5),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("2 SỐ -  CỘNG & TRỪ", 18),
+            new Topics("3 SỐ -  CỘNG & TRỪ", 19),
+            new Topics("4 SỐ -  CỘNG & TRỪ", 20),
+            new Topics("5 SỐ -  CỘNG & TRỪ", 21),
+            new Topics("6 SỐ -  CỘNG & TRỪ", 22),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("2 SỐ -  CỘNG", 23),
+            new Topics("3 SỐ -  CỘNG", 24),
+            new Topics("4 SỐ -  CỘNG", 25),
+            new Topics("5 SỐ -  CỘNG", 26),
+            new Topics("6 SỐ -  CỘNG", 27),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("2 SỐ -  TRỪ", 28),
+            new Topics("3 SỐ -  TRỪ", 29),
+            new Topics("4 SỐ -  TRỪ", 30),
+            new Topics("5 SỐ -  TRỪ", 31),
+            new Topics("6 SỐ -  TRỪ", 32),
 
             new Topics("---------------------------------", -1),
 
@@ -374,8 +405,12 @@ $(document).ready(function () {
 
                     self.soroban(final_number);
 
+                    flipNumber(final_number, function(){
+                        readtts("Bằng " + final_number, self.mute2());
+                    })
+
                     // self.backgroundblack(true);
-                    readtts("Bằng " + final_number, true);
+                   
 
                     self.history(self.history() + final_number);
                     isResult = true;
@@ -399,8 +434,11 @@ $(document).ready(function () {
                 if (self.isLastNumber() && !isResult) {
 
                     self.soroban(final_number);
+                    flipNumber(final_number, function(){
+                        readtts("Bằng " + final_number, self.mute2());
+                    })
 
-                    readtts("Bằng " + final_number, true);
+                    readtts("Bằng " + final_number, self.mute2());
 
                     self.history(self.history() + final_number);
                     isResult = true;
@@ -467,6 +505,8 @@ $(document).ready(function () {
 
             if (!self.isLastNumber() && !isResult && final_number != -0001) {
                 self.isLoading(false);
+
+                
                 self.soroban(final_number);
 
                 readtts("Bằng " + final_number, true);
@@ -554,7 +594,52 @@ $(document).ready(function () {
             } else if (self.level().value == 17) { //2 SỐ - CHỈ CÓ ANH BẠN LỚN - (dễ)
                 results = randSorobanABL1(self.numberrange(), 99, 90, -9, -1);
 
-            } else if (self.level().value == -16) { //PHÉP NHÂN 1 - 99
+            } else if (self.level().value == 18) { //2 SỐ - CỘNG TRỪ
+                results = randSorobanlevelN(self.numberrange(), 50, 99, -99, 99);
+
+            } else if (self.level().value == 19) { //3 SỐ - CỘNG TRỪ
+                results = randSorobanlevelN(self.numberrange(), 500, 999, -999, 999);
+
+            } else if (self.level().value == 20) { //4 SỐ - CỘNG TRỪ
+                results = randSorobanlevelN(self.numberrange(), 5000, 9999, -9999, 9999);
+
+            } else if (self.level().value == 21) { //5 SỐ - CỘNG TRỪ
+                results = randSorobanlevelN(self.numberrange(), 50000, 99999, -99999, 99999);
+
+            } else if (self.level().value == 22) { //6 SỐ - CỘNG TRỪ
+                results = randSorobanlevelN(self.numberrange(), 500000, 999999, -999999, 999999);
+
+            } else if (self.level().value == 23) { //2 SỐ - CỘNG
+                results = randSorobanlevelN(self.numberrange(), 11, 99, 11, 99);
+
+            } else if (self.level().value == 24) { //3 SỐ - CỘNG
+                results = randSorobanlevelN(self.numberrange(), 101, 999, 101, 999);
+
+            } else if (self.level().value == 25) { //4 SỐ - CỘNG
+                results = randSorobanlevelN(self.numberrange(), 1001, 9999, 1001, 9999);
+
+            } else if (self.level().value == 26) { //5 SỐ - CỘNG
+                results = randSorobanlevelN(self.numberrange(), 10001, 99999, 10001, 99999);
+
+            } else if (self.level().value == 27) { //6 SỐ - CỘNG
+                results = randSorobanlevelN(self.numberrange(), 100001, 999999, 100001, 999999);
+
+            } else if (self.level().value == 28) { //2 SỐ - TRỪ
+                results = randSorobanlevelN(self.numberrange(), 500, 999, -99, -1);
+                
+            }  else if (self.level().value == 29) { //3 SỐ - TRỪ
+                results = randSorobanlevelN(self.numberrange(), 1001, 9999, -999, -1);
+
+            }  else if (self.level().value == 30) { //4 SỐ - TRỪ
+                results = randSorobanlevelN(self.numberrange(), 10001, 99999, -9999, -1);
+
+            }  else if (self.level().value == 31) { //5 SỐ - TRỪ
+                results = randSorobanlevelN(self.numberrange(), 100001, 999999, -99999, -1);
+
+            }  else if (self.level().value == 32) { //6 SỐ - TRỪ
+                results = randSorobanlevelN(self.numberrange(), 1000001, 9999999, -999999, -1);
+
+            }  else if (self.level().value == -16) { //PHÉP NHÂN 1 - 99
                 results = randSorobanPhepNhan1_99(self.numberrange(), 99);
 
             } else if (self.level().value == -17) { //PHÉP NHÂN 2Dx1D
@@ -716,34 +801,33 @@ $(document).ready(function () {
 
 
 
-        var length = 1;
+        var length = 5;
         var index = 0;
 
         var excersize = true;
         var ketqua = [];
+        
         for (var i = 0; i < 0; i++) {
+            result = randSorobanABLKH_ABN_CONG2(5);
 
-            var inte = generateRandomInteger(1, 9);
-            result = phepnhanndxnd(101, 999, 5, 9)
-            console.log(result)
             if ((result.numbers.length) == length) {
                 var str = "" + (index + 1);
                 var pad = "000"
-
+                
                 if (excersize) {
                     var ans = pad.substring(0, pad.length - str.length) + str
-                    var template = "<div>" + (ans) + "." + result.numbers.join(" ") + " = ..................... </div>"
+                    var template = "<div>" + (ans) + "." + result.numbers.join(" ") + " = ................................. </div>"
                     if (index % 2 == 0) {
-                        template = "<div><b><i>" + (ans) + "." + result.numbers.join(" ") + " = </i></b> ..................... </div>"
+                        template = "<div><b><i>" + (ans) + "." + result.numbers.join(" ") + " = </i></b> ................................. </div>"
                     }
                     ketqua[index] = result.s;
                     index++;
                 } else {
                     var ans = pad.substring(0, pad.length - str.length) + str
-                    var template = "<div>" + (ans) + "." + result.numbers.join(" ") + " = " + result.s + "</div>"
-                    // if(index%2 == 0){
-                    //     template = "<div><b><i><u>" + (ans) + "." + result.numbers.join(" ") + " = " + result.s + "</u></i></b></div>"
-                    // }
+                    var template = "<div>" + (ans) + "." + result.numbers.join(" ") + " </div>"
+                    if(index%2 == 0){
+                        template = "<div><b><i><u>" + (ans) + "." + result.numbers.join(" ") + " = " + result.s + "</u></i></b></div>"
+                    }
                     index++;
                 }
 

@@ -9,6 +9,11 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
+
+        <link rel="stylesheet" href="js/jquery.flipcounter.css" />
+        <script src="js/jquery.flipcounter.js"></script>
+        <script src="js/jstween-1.1.min.js"></script>
+        
         <script src="script.js"></script>
         <script src="phep_chia.js"></script>
         <script src="js/level2.js"></script>
@@ -21,6 +26,7 @@
                 audio.play();
             }
 
+
         </script>
         
     </head>
@@ -30,7 +36,7 @@
         
         <div class="ui-grid-solo" data-bind="css: { 'show' : isSetting(), 'hide' : !isSetting()}">
             <div class="ui-grid-a">
-                    <label for="slider-1">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer"  step=".02" min="0" max="6" value="3" data-bind="value: timer"/>
+                    <label for="slider-1">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer"  step=".02" min="0" max="10" value="3" data-bind="value: timer"/>
             </div>
             <div class="ui-grid-a">
                     <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="100" value="10" data-bind="value: numberrange, valueUpdate: 'input'"/>
@@ -63,6 +69,11 @@
                 <div class="ui-block-a">
                     <label>
                         <input type="checkbox" name="checkbox-0 " data-bind="checked: mute" >âm thanh
+                    </label>
+                </div>
+                <div class="ui-block-a">
+                    <label>
+                        <input type="checkbox" name="checkbox-0 " data-bind="checked: mute2" >âm thanh 2
                     </label>
                 </div>
                 <div  class="ui-block-b">
@@ -138,14 +149,14 @@
             <!-- ko if: !isLoading() && level().value < -1 -->
             <div class="notloading" style="padding-top: 98px;">
                 <div class="ui-grid-a">
-                    <h1  data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll" style="font-size: 157px;"></h1>
+                    <h1  data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll" id="value3" style="font-size: 157px;"></h1>
                 </div>
             </div>
             <!-- /ko -->
             <!-- ko if: !isLoading() && level().value > -1 -->
             <div class="notloading" style="padding-top: 98px;">
                 <div class="ui-grid-a">
-                    <h1 class="ui-block-b" data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll"></h1>
+                    <h1 class="ui-block-b"  id="value3" style="width: 62% !important;" data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll"></h1>
                     <!-- ko if: !isUseSoroban() -->
                         <div class="ui-block-b" data-bind="style : { visibility : backgroundblack() === true ? 'visible' : 'hidden' }, click: onClickHideGuideFingerMath" style="text-align: center;">
                             <img data-bind="attr: { src: handleft() }" style="height: 264px;" />
@@ -156,11 +167,11 @@
                         </div>
                     <!-- /ko -->
                     <!-- ko if: isUseSoroban() -->
-                        <div class="ui-block-b" data-bind="style : { visibility : backgroundblack() === true ? 'visible' : 'hidden' }, click: onClickHideGuideSoroban" style="text-align: center;">
-                            <img data-bind="attr: { src: abacusCol4() }" style="height: 264px;" /> 
-                            <img data-bind="attr: { src: abacusCol3() }" style="height: 264px;" /> 
-                            <img data-bind="attr: { src: abacusCol2() }" style="height: 264px;" />
-                            <img data-bind="attr: { src: abacusCol1() }" style="height: 264px;" />
+                        <div class="ui-block-b" style="width: 32% !important;"  data-bind="style : { visibility : backgroundblack() === true ? 'visible' : 'hidden' }, click: onClickHideGuideSoroban" style="text-align: center;">
+                            <img data-bind="attr: { src: abacusCol4() }" style="height: 250px;" /> 
+                            <img data-bind="attr: { src: abacusCol3() }" style="height: 250px;" /> 
+                            <img data-bind="attr: { src: abacusCol2() }" style="height: 250px;" />
+                            <img data-bind="attr: { src: abacusCol1() }" style="height: 250px;" />
                             <!-- ko if: isUseHistory() -->  
                                 <div style="font-size: 40px;color: red;" data-bind="text: history"></div>
                             <!-- /ko -->
