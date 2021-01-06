@@ -1,8 +1,9 @@
 $(document).ready(function () {
 
-    function flipNumber(number, onFlip){
+
+    function flipNumber(number, onFlip) {
         $("#value3").text(0);
-        $("#value3").flipCounterInit({speed: 0.6, onFlip: onFlip});
+        $("#value3").flipCounterInit({ speed: 0.7, onFlip: onFlip });
         $("#value3").flipCounterUpdate(number);
     }
 
@@ -16,14 +17,22 @@ $(document).ready(function () {
     var ViewModel = function (first, last) {
         var self = this;
 
+        //numpad
+        this.numpad = ko.observable();
+
+        this.btnNumpad = function(number){
+            alert(number);
+        }
+
         this.isSetting = ko.observable(true);
         this.number_temp = ko.observableArray();
-        var random_color = ko.observableArray(['#fcba03', '#ff3700', '#a2ff00', '#00d154', '#377a52', '#366075', '#1b4357', '#6b7c85', '#23346b', '#2e4ba6', '#6d1bbf']);
+        // var random_color = ko.observableArray(['#fcba03', '#ff3700', '#a2ff00', '#00d154', '#377a52', '#366075', '#1b4357', '#6b7c85', '#23346b', '#2e4ba6', '#6d1bbf']);
+        var random_color = ko.observableArray(['#1be51b']);
         this.image_loading = ko.observable();
 
         this.colorText = ko.observable("black");
 
-        this.timer = ko.observable(3);
+        this.timer = ko.observable(2);
         this.numberrange = ko.observable(10);
         this.level = ko.observable(0);
 
@@ -55,6 +64,9 @@ $(document).ready(function () {
         this.abacusCol2 = ko.observable();
         this.abacusCol3 = ko.observable();
         this.abacusCol4 = ko.observable();
+        this.abacusCol5 = ko.observable();
+        this.abacusCol6 = ko.observable();
+        this.abacusCol7 = ko.observable();
 
 
         this.abacusCol1_GUIDE = ko.observable("");
@@ -62,14 +74,59 @@ $(document).ready(function () {
         this.abacusCol3_GUIDE = ko.observable("");
         this.abacusCol4_GUIDE = ko.observable("");
         this.isFlashEffect = ko.observable(false);
+        this.isShowAll = ko.observable(true);
+        var _isShowAll = true;
+        this.number_temp_all = ko.observableArray();
+
+
+        this.replaceABC = function(soroban){
+            
+            if(!!soroban() && soroban().replace){
+                console.log(soroban())
+                return soroban().replace('+','');
+            }   
+            return '';
+            
+        }
 
         this.level.subscribe(function (newValue) {
-            
-            if(newValue.value <= -1){
+
+            if (newValue.value <= -1) {
                 self.stepbystep(true);
                 $('#cblevel').prop('checked', true).checkboxradio('refresh');
             }
         });
+
+        window.addEventListener("keydown", function (e) {
+            //tested in IE/Chrome/Firefox
+            // document.getElementById("key").innerHTML = e.key;
+            // document.getElementById("keyCode").innerHTML = e.keyCode;
+            // document.getElementById("eventCode").innerHTML = e.code;
+            if (e.keyCode == 39) { //ArrowRight
+                self.onResultAll();
+            } else if (e.keyCode == 37) { //ArrowLeft
+                self.onClickHideGuideHistory();
+            } else if (e.keyCode == 38) { //ArrowUp
+                self.onClickHideGuideSoroban();
+            } else if (e.keyCode == 40) { //ArrowDown - set by set
+                self.isTimer(false)
+                self.stepbystep(true);
+                self.onViewResult();
+            } else if (e.keyCode == 179) { //Play
+                self.mute(true);
+                self.mute2(false);
+
+            } else if (e.keyCode == 33) { //page up
+                self.onViewBack();
+            } else if (e.keyCode == 34) { //page down - auto
+                self.isTimer(true)
+                self.stepbystep(false);
+                self.onViewResult();
+            } else if (e.keyCode == 8) { //mute reset
+                self.onViewResult();
+            }
+        })
+
 
         function calcuShowHand(number) {
             console.error("---------", number)
@@ -98,10 +155,24 @@ $(document).ready(function () {
             var chuc = Math.floor((number / 10) % 10);
             var tram = Math.floor((number / 100) % 10);
             var ngan = Math.floor((number / 1000) % 10);
-            self.abacusCol1("img/soroban/s" + donvi + ".png")
+            var ngan5 = Math.floor((number / 10000) % 10);
+            var ngan6 = Math.floor((number / 100000) % 10);
+            var ngan7 = Math.floor((number / 1000000) % 10);
+
+            self.abacusCol1("img/soroban/s" + donvi + ".png");
+            // self.abacusCol2("img/soroban/s" + chuc + ".png")
+            // self.abacusCol3("img/soroban/s" + tram + ".png")
+            // self.abacusCol4("img/soroban/s" + ngan + ".png")
+            // self.abacusCol5("img/soroban/s" + ngan5 + ".png")
+            // self.abacusCol6("img/soroban/s" + ngan6 + ".png")
+            // self.abacusCol7("img/soroban/s" + ngan7 + ".png")
+
             self.abacusCol2("img/soroban/s" + formatted_string(chuc, '0', 'l') + ".png")
             self.abacusCol3("img/soroban/s" + formatted_string(tram, '00', 'l') + ".png")
-            self.abacusCol4("img/soroban/s" + formatted_string(ngan, '00', 'l') + ".png")
+            self.abacusCol4("img/soroban/s" + formatted_string(ngan, '000', 'l') + ".png")
+            self.abacusCol5("img/soroban/s" + formatted_string(ngan5, '0000', 'l') + ".png")
+            self.abacusCol6("img/soroban/s" + formatted_string(ngan6, '00000', 'l') + ".png")
+            self.abacusCol7("img/soroban/s" + formatted_string(ngan7, '000000', 'l') + ".png")
         }
 
 
@@ -111,7 +182,16 @@ $(document).ready(function () {
         ])
 
 
-        this.availableTopics = ko.observableArray([
+        this.availableTopics = ko.observableArray([  //36
+            new Topics("2 SỐ -  CỘNG & TRỪ", 18),
+            new Topics("1 SỐ -  CỘNG & TRỪ", 34),
+            new Topics("3 SỐ -  CỘNG & TRỪ", 19),
+            new Topics("4 SỐ -  CỘNG & TRỪ", 20),
+            new Topics("5 SỐ -  CỘNG & TRỪ", 21),
+            new Topics("6 SỐ -  CỘNG & TRỪ", 22),
+
+            new Topics("---------------------------------", -1),
+
             new Topics("1 SỐ - KHÔNG ANH BẠN NHỎ - BÊN PHẢI", 13),
             new Topics("1 SỐ - KHÔNG ANH BẠN NHỎ - BÊN TRÁI", 14),
             new Topics("2 SỐ - KHÔNG ANH BẠN NHỎ", 15),
@@ -153,14 +233,68 @@ $(document).ready(function () {
 
             new Topics("---------------------------------", -1),
 
-            new Topics("2 SỐ -  CỘNG & TRỪ", 18),
-            new Topics("3 SỐ -  CỘNG & TRỪ", 19),
-            new Topics("4 SỐ -  CỘNG & TRỪ", 20),
-            new Topics("5 SỐ -  CỘNG & TRỪ", 21),
-            new Topics("6 SỐ -  CỘNG & TRỪ", 22),
+            new Topics("2 SỐ -  CỘNG & TRỪ < 100", 39),
 
             new Topics("---------------------------------", -1),
 
+            new Topics("1 SỐ - PHÉP CHIA 2",   -51),
+            new Topics("2 SỐ - PHÉP CHIA 20",  -52),
+            new Topics("2 SỐ - PHÉP CHIA 2X",  -53),
+            new Topics("3 SỐ - PHÉP CHIA 2XX", -54),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("1 SỐ - PHÉP CHIA 3",   -55),
+            new Topics("2 SỐ - PHÉP CHIA 30",  -56),
+            new Topics("2 SỐ - PHÉP CHIA 3X",  -57),
+            new Topics("3 SỐ - PHÉP CHIA 3XX", -58),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("1 SỐ - PHÉP CHIA 4",   -59),
+            new Topics("2 SỐ - PHÉP CHIA 40",  -60),
+            new Topics("2 SỐ - PHÉP CHIA 4X",  -61),
+            new Topics("3 SỐ - PHÉP CHIA 4XX", -62),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("1 SỐ - PHÉP CHIA 5",   -63),
+            new Topics("2 SỐ - PHÉP CHIA 50",  -64),
+            new Topics("2 SỐ - PHÉP CHIA 5X",  -65),
+            new Topics("3 SỐ - PHÉP CHIA 5XX", -66),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("1 SỐ - PHÉP CHIA 6",   -67),
+            new Topics("2 SỐ - PHÉP CHIA 60",  -68),
+            new Topics("2 SỐ - PHÉP CHIA 6X",  -69),
+            new Topics("3 SỐ - PHÉP CHIA 6XX", -70),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("1 SỐ - PHÉP CHIA 7",   -71),
+            new Topics("2 SỐ - PHÉP CHIA 70",  -72),
+            new Topics("2 SỐ - PHÉP CHIA 7X",  -73),
+            new Topics("3 SỐ - PHÉP CHIA 7XX", -74),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("1 SỐ - PHÉP CHIA 8",   -75),
+            new Topics("2 SỐ - PHÉP CHIA 80",  -76),
+            new Topics("2 SỐ - PHÉP CHIA 8X",  -77),
+            new Topics("3 SỐ - PHÉP CHIA 8XX", -78),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("1 SỐ - PHÉP CHIA 9",   -79),
+            new Topics("2 SỐ - PHÉP CHIA 90",  -80),
+            new Topics("2 SỐ - PHÉP CHIA 9X",  -81),
+            new Topics("3 SỐ - PHÉP CHIA 9XX", -82),
+
+            new Topics("---------------------------------", -1),
+
+
+            new Topics("1 SỐ -  CỘNG", 38),
             new Topics("2 SỐ -  CỘNG", 23),
             new Topics("3 SỐ -  CỘNG", 24),
             new Topics("4 SỐ -  CỘNG", 25),
@@ -169,11 +303,18 @@ $(document).ready(function () {
 
             new Topics("---------------------------------", -1),
 
+            new Topics("1 SỐ -  TRỪ", 36),
             new Topics("2 SỐ -  TRỪ", 28),
             new Topics("3 SỐ -  TRỪ", 29),
             new Topics("4 SỐ -  TRỪ", 30),
             new Topics("5 SỐ -  TRỪ", 31),
             new Topics("6 SỐ -  TRỪ", 32),
+
+            new Topics("---------------------------------", -1),
+
+            new Topics("2 SỐ -  BÌNH THƯỜNG", 33),
+            new Topics("3 SỐ -  BÌNH THƯỜNG", 34),
+            new Topics("4 SỐ -  BÌNH THƯỜNG", 35),
 
             new Topics("---------------------------------", -1),
 
@@ -185,6 +326,18 @@ $(document).ready(function () {
             new Topics("PHÉP NHÂN 2Dx1D", -17),
             new Topics("PHÉP NHÂN 3Dx1D", -18),
             new Topics("PHÉP NHÂN 4Dx1D", -19),
+            new Topics("PHÉP NHÂN 5Dx1D", -40),
+            new Topics("PHÉP NHÂN 6Dx1D", -41),
+            new Topics("PHÉP NHÂN 7Dx1D", -42),
+            new Topics("PHÉP NHÂN 8Dx1D", -43),
+            new Topics("PHÉP NHÂN 9Dx1D", -44),
+            new Topics("PHÉP NHÂN 10Dx1D", -45),
+            new Topics("PHÉP NHÂN 11Dx1D", -46),
+            new Topics("PHÉP NHÂN 12Dx1D", -47),
+            new Topics("PHÉP NHÂN 13Dx1D", -48),
+            new Topics("PHÉP NHÂN 14Dx1D", -49),
+            new Topics("PHÉP NHÂN 15Dx1D", -50),
+
 
             new Topics("---------------------------------", -1),
 
@@ -268,20 +421,21 @@ $(document).ready(function () {
 
         var sum = 0;
         var index_storage_result = 0;
-        this.tick = function () {
-            playAudio();
-            self.colorText(random_color()[self.number_temp().length % 2]);
-            var firstElement = self.number_temp.shift();
+        this.index_number_temp_all = ko.observable(-1);
 
+        this.tick = function () {
+            var color = random_color()[self.number_temp().length % 2];
+            playAudio();
+            self.colorText(color);
+            var firstElement = self.number_temp.shift();
+            
             if (self.level().value < -1) { // ly thuyet
                 console.log(firstElement)
                 index_storage_result++;
                 if (!!firstElement) {
                     self.sentence(self.sentence() + 1);
                     readtts(firstElement, self.mute(), self.speakEnglish());
-                    self.soroban(firstElement)
-
-
+                    self.soroban(firstElement);
                 } else {
                     self.isLastNumber(true);
                     self.nextSentence(true);
@@ -350,21 +504,28 @@ $(document).ready(function () {
                         if (firstElement.indexOf("=") == -1) {
                             setTimeout(function () {
                                 self.soroban("");
-                            }, self.timer() * 1000 - 100);
+                            }, self.timer() * 1000 - 150);
                         }
                     }
 
 
 
                 } else {
+                    self.isShowAll(false);
                     self.isLastNumber(true);
                     clearInterval(interval_timer);
                 }
                 self.history(self.history() + firstElement.replace("=?", " = "));
 
                 if (firstElement.indexOf("=") == -1) {
+                    
+                    
                     sum += parseInt(firstElement.replace("- ", "-").replace("+ ", ""));
                     calcuShowHand(sum);
+                }
+
+                if(firstElement.indexOf("=") != -1){
+                    playAudio2();
                 }
 
 
@@ -386,6 +547,9 @@ $(document).ready(function () {
                     self.timers(sec2time(elapsedTime / 1000));
                 }, 100);
             }
+
+            var index__= self.index_number_temp_all() + 1;
+            self.index_number_temp_all(index__);
         };
 
         var isResult = false;
@@ -397,27 +561,29 @@ $(document).ready(function () {
                     final_number = -0001;
                     self.onViewResult();
                     self.nextSentence(false);
-                   
+
                     return;
                 }
 
                 if (self.isLastNumber() && !isResult && self.level().value > -1) {
 
                     self.soroban(final_number);
+                    self.isShowAll(false);
 
-                    flipNumber(final_number, function(){
-                        readtts("Bằng " + final_number, self.mute2());
+                    var final_number_copy = final_number;
+                    flipNumber(final_number, function () {
+                        readtts("Bằng " + final_number_copy, self.mute2());
                     })
 
                     // self.backgroundblack(true);
-                   
+
 
                     self.history(self.history() + final_number);
                     isResult = true;
                     self.nextSentence(true);
                     clearInterval(timerFinal);
                     final_number = -0001;
-                    
+
                 } else {
                     self.tick();
                 }
@@ -426,17 +592,25 @@ $(document).ready(function () {
 
             } else {
 
-                if (self.isLastNumber() && final_number == -0001){
+                if (self.isLastNumber() && final_number == -0001) {
                     self.onViewResult();
                     self.nextSentence(false);
                 }
 
                 if (self.isLastNumber() && !isResult) {
-
+                    self.isShowAll(false);
                     self.soroban(final_number);
-                    flipNumber(final_number, function(){
-                        readtts("Bằng " + final_number, self.mute2());
+                    var final_number_copy = final_number;
+                    flipNumber(final_number, function () {
+                        readtts("Bằng " + final_number_copy, self.mute2());
                     })
+                    $(".mask").animate({
+                        width: "70%",
+                        opacity: 0.4,
+                        marginLeft: "0.6in",
+                        fontSize: "3em",
+                        borderWidth: "10px"
+                    }, 1500);
 
                     readtts("Bằng " + final_number, self.mute2());
 
@@ -468,12 +642,12 @@ $(document).ready(function () {
 
                 }
 
-                
+
 
 
             }
 
-            
+
 
 
         }
@@ -490,6 +664,8 @@ $(document).ready(function () {
         var storage_result = [];
         this.onViewResult = function () {
 
+            playAudio2();
+
             //reset
             sum = 0;
             console.log(self.level())
@@ -499,14 +675,18 @@ $(document).ready(function () {
             self.sentence(0);
             isResult = false;
             self.number_temp.removeAll();
+            self.number_temp_all.removeAll();
             self.history("");
             self.timers("00:00:00,000")
             index_storage_result = 0;
+            self.index_number_temp_all(-1);
+            self.isShowAll($('#checkbox-0-Guest').prop("checked"));
 
             if (!self.isLastNumber() && !isResult && final_number != -0001) {
                 self.isLoading(false);
+                self.isShowAll(false);
 
-                
+
                 self.soroban(final_number);
 
                 readtts("Bằng " + final_number, true);
@@ -549,7 +729,7 @@ $(document).ready(function () {
             } else if (self.level().value == 2) { //4 SỐ - KHÔNG HẾT HỢP
                 results = randSorobanlevel1D(self.numberrange(), self.hard);
 
-            } else if (self.level().value == 3) { //2 SỐ - ANH BẠN NHỎ
+            } else if (self.level().value == 3) { //2 SỐ - ANH BẠN NHỎ, chua làm
                 results = randSorobanlevel2B_(self.numberrange(), self.hard);
 
             } else if (self.level().value == 4) { //3 SỐ - ANH BẠN NHỎ
@@ -626,20 +806,41 @@ $(document).ready(function () {
 
             } else if (self.level().value == 28) { //2 SỐ - TRỪ
                 results = randSorobanlevelN(self.numberrange(), 500, 999, -99, -1);
-                
-            }  else if (self.level().value == 29) { //3 SỐ - TRỪ
+
+            } else if (self.level().value == 29) { //3 SỐ - TRỪ
                 results = randSorobanlevelN(self.numberrange(), 1001, 9999, -999, -1);
 
-            }  else if (self.level().value == 30) { //4 SỐ - TRỪ
+            } else if (self.level().value == 30) { //4 SỐ - TRỪ
                 results = randSorobanlevelN(self.numberrange(), 10001, 99999, -9999, -1);
 
-            }  else if (self.level().value == 31) { //5 SỐ - TRỪ
+            } else if (self.level().value == 31) { //5 SỐ - TRỪ
                 results = randSorobanlevelN(self.numberrange(), 100001, 999999, -99999, -1);
 
-            }  else if (self.level().value == 32) { //6 SỐ - TRỪ
+            } else if (self.level().value == 32) { //6 SỐ - TRỪ
                 results = randSorobanlevelN(self.numberrange(), 1000001, 9999999, -999999, -1);
 
-            }  else if (self.level().value == -16) { //PHÉP NHÂN 1 - 99
+            } else if (self.level().value == 33) { //2 SỐ -  BÌNH THƯỜNG
+                results = randSorobanleve2N(self.numberrange(), 50, 99, -99, 99, 2);
+
+            } else if (self.level().value == 34) { //3 SỐ -  BÌNH THƯỜNG
+                results = randSorobanleve2N(self.numberrange(), 500, 999, -999, 999, 3);
+
+            } else if (self.level().value == 35) { //4 SỐ -  BÌNH THƯỜNG
+                results = randSorobanleve2N(self.numberrange(), 5000, 9999, -0999, 9999, 4);
+
+            } else if (self.level().value == 39) { //2 SỐ -  CỘNG & TRỪ < 100
+                results = randSorobanlevelN(self.numberrange(), 1, 99, -99, 99, true); // new Topics("2 SỐ -  CỘNG & TRỪ < 100", 33),
+
+            } else if (self.level().value == 34) { //1 SỐ -  CỘNG & TRỪ < 100
+                results = randSorobanlevelN(self.numberrange(), 1, 9, -9, 9);
+
+            } else if (self.level().value == 38) { //1 SỐ -  CỘNG
+                results = randSorobanlevelN(self.numberrange(), 1, 9, 1, 9);
+
+            } else if (self.level().value == 36) { //1 SỐ -  TRỪ
+                results = randSorobanlevelN(self.numberrange(), 100, 999, -1, -9);
+
+            } else if (self.level().value == -16) { //PHÉP NHÂN 1 - 99
                 results = randSorobanPhepNhan1_99(self.numberrange(), 99);
 
             } else if (self.level().value == -17) { //PHÉP NHÂN 2Dx1D
@@ -650,6 +851,135 @@ $(document).ready(function () {
 
             } else if (self.level().value == -19) { //PHÉP NHÂN 4Dx1D
                 results = phepnhanndxnd(self.numberrange(), 1001, 9999, 2, 9);
+
+            } else if (self.level().value == -40) { //PHÉP NHÂN 5Dx1D
+                results = phepnhanndxnd(self.numberrange(), 10001, 99999, 2, 9);
+
+            } else if (self.level().value == -41) { //PHÉP NHÂN 6Dx1D
+                results = phepnhanndxnd(self.numberrange(), 100001, 999999, 2, 9);
+
+            } else if (self.level().value == -42) { //PHÉP NHÂN 7Dx1D
+                results = phepnhanndxnd(self.numberrange(), 1000001, 9999999, 2, 9);
+
+            } else if (self.level().value == -43) { //PHÉP NHÂN 8Dx1D
+                results = phepnhanndxnd(self.numberrange(), 10000001, 99999999, 2, 9);
+
+            } else if (self.level().value == -44) { //PHÉP NHÂN 9Dx1D
+                results = phepnhanndxnd(self.numberrange(), 100000001, 999999999, 2, 9);
+
+            } else if (self.level().value == -45) { //PHÉP NHÂN 10Dx1D
+                results = phepnhanndxnd(self.numberrange(), 1000000001, 9999999999, 2, 9);
+
+            } else if (self.level().value == -46) { //PHÉP NHÂN 11Dx1D
+                results = phepnhanndxnd(self.numberrange(), 10000000001, 99999999999, 2, 9);
+
+            } else if (self.level().value == -47) { //PHÉP NHÂN 12Dx1D
+                results = phepnhanndxnd(self.numberrange(), 100000000001, 999999999999, 2, 9);
+
+            } else if (self.level().value == -48) { //PHÉP NHÂN 13Dx1D
+                results = phepnhanndxnd(self.numberrange(), 1000000000001, 9999999999999, 2, 9);
+
+            } else if (self.level().value == -49) { //PHÉP NHÂN 14Dx1D
+                results = phepnhanndxnd(self.numberrange(), 10000000000001, 99999999999999, 2, 9);
+
+            } else if (self.level().value == -50) { //PHÉP NHÂN 15Dx1D
+                results = phepnhanndxnd(self.numberrange(), 100000000000001, 999999999999999, 2, 9);
+
+            } else if (self.level().value == -51) { //PHÉP CHIA 1DD:2
+                results = phepchiandxnd(self.numberrange(), 2, 2, 10, 900);
+
+            } else if (self.level().value == -52) { //PHÉP CHIA 1DD:20
+                results = phepchiandxnd(self.numberrange(), 20, 20, 10, 900);
+
+            } else if (self.level().value == -53) { //PHÉP CHIA 1DD:2X
+                results = phepchiandxnd(self.numberrange(), 20, 29, 10, 900);
+
+            } else if (self.level().value == -54) { //PHÉP CHIA 1DD:2XX
+                results = phepchiandxnd(self.numberrange(), 200, 299, 10, 900);
+
+            } else if (self.level().value == -55) { //PHÉP CHIA 1DD:3
+                results = phepchiandxnd(self.numberrange(), 3, 3, 10, 900);
+
+            } else if (self.level().value == -56) { //PHÉP CHIA 1DD:30
+                results = phepchiandxnd(self.numberrange(), 30, 30, 10, 900);
+
+            } else if (self.level().value == -57) { //PHÉP CHIA 1DD:3X
+                results = phepchiandxnd(self.numberrange(), 30, 39, 10, 900);
+
+            } else if (self.level().value == -58) { //PHÉP CHIA 1DD:3XX
+                results = phepchiandxnd(self.numberrange(), 300, 399, 10, 900);
+
+            } else if (self.level().value == -59) { //PHÉP CHIA 1DD:4
+                results = phepchiandxnd(self.numberrange(), 4, 4, 10, 900);
+
+            } else if (self.level().value == -60) { //PHÉP CHIA 1DD:40
+                results = phepchiandxnd(self.numberrange(), 40, 40, 10, 900);
+
+            } else if (self.level().value == -61) { //PHÉP CHIA 1DD:4X
+                results = phepchiandxnd(self.numberrange(), 40, 49, 10, 900);
+
+            } else if (self.level().value == -62) { //PHÉP CHIA 1DD:4XX
+                results = phepchiandxnd(self.numberrange(), 400, 499, 10, 900);
+
+            } else if (self.level().value == -63) { //PHÉP CHIA 1DD:5
+                results = phepchiandxnd(self.numberrange(), 5, 5, 10, 900);
+
+            } else if (self.level().value == -64) { //PHÉP CHIA 1DD:50
+                results = phepchiandxnd(self.numberrange(), 50, 50, 10, 900);
+
+            } else if (self.level().value == -65) { //PHÉP CHIA 1DD:5X
+                results = phepchiandxnd(self.numberrange(), 50, 59, 10, 900);
+
+            } else if (self.level().value == -66) { //PHÉP CHIA 1DD:5XX
+                results = phepchiandxnd(self.numberrange(), 500, 599, 10, 900);
+
+            } else if (self.level().value == -67) { //PHÉP CHIA 1DD:6
+                results = phepchiandxnd(self.numberrange(), 6, 6, 10, 900);
+
+            } else if (self.level().value == -68) { //PHÉP CHIA 1DD:60
+                results = phepchiandxnd(self.numberrange(), 60, 60, 10, 900);
+
+            } else if (self.level().value == -69) { //PHÉP CHIA 1DD:6X
+                results = phepchiandxnd(self.numberrange(), 60, 69, 10, 900);
+
+            } else if (self.level().value == -70) { //PHÉP CHIA 1DD:6XX
+                results = phepchiandxnd(self.numberrange(), 600, 699, 10, 900);
+
+            } else if (self.level().value == -71) { //PHÉP CHIA 1DD:7
+                results = phepchiandxnd(self.numberrange(), 7, 7, 10, 900);
+
+            } else if (self.level().value == -72) { //PHÉP CHIA 1DD:70
+                results = phepchiandxnd(self.numberrange(), 70, 70, 10, 900);
+
+            } else if (self.level().value == -73) { //PHÉP CHIA 1DD:7X
+                results = phepchiandxnd(self.numberrange(), 70, 79, 10, 900);
+
+            } else if (self.level().value == -74) { //PHÉP CHIA 1DD:7XX
+                results = phepchiandxnd(self.numberrange(), 700, 799, 10, 900);
+
+            } else if (self.level().value == -75) { //PHÉP CHIA 1DD:8
+                results = phepchiandxnd(self.numberrange(), 8, 8, 10, 900);
+
+            } else if (self.level().value == -76) { //PHÉP CHIA 1DD:80
+                results = phepchiandxnd(self.numberrange(), 80, 80, 10, 900);
+
+            } else if (self.level().value == -77) { //PHÉP CHIA 1DD:8X
+                results = phepchiandxnd(self.numberrange(), 80, 89, 10, 900);
+
+            } else if (self.level().value == -78) { //PHÉP CHIA 1DD:8XX
+                results = phepchiandxnd(self.numberrange(), 800, 899, 10, 900);
+
+            } else if (self.level().value == -79) { //PHÉP CHIA 1DD:9
+                results = phepchiandxnd(self.numberrange(), 9, 9, 10, 900);
+
+            } else if (self.level().value == -80) { //PHÉP CHIA 1DD:90
+                results = phepchiandxnd(self.numberrange(), 90, 90, 10, 900);
+
+            } else if (self.level().value == -81) { //PHÉP CHIA 1DD:9X
+                results = phepchiandxnd(self.numberrange(), 90, 99, 10, 900);
+
+            } else if (self.level().value == -82) { //PHÉP CHIA 1DD:9XX
+                results = phepchiandxnd(self.numberrange(), 900, 999, 10, 900);
 
             } else if (self.level().value == -20) { //PHÉP NHÂN 2Dx2D
                 results = phepnhanndxnd(self.numberrange(), 11, 99, 11, 99);
@@ -680,17 +1010,25 @@ $(document).ready(function () {
                 results = lythuyet_ANH_BAN_NHO_LON(self.numberrange(), 99);
             }
 
+            // new Topics("PHÉP NHÂN 9Dx1D", -44),
+            // new Topics("PHÉP NHÂN 10Dx1D", -45),
+            // new Topics("PHÉP NHÂN 11Dx1D", -46),
+            // new Topics("PHÉP NHÂN 12Dx1D", -47),
+            // new Topics("PHÉP NHÂN 13Dx1D", -48),
+            // new Topics("PHÉP NHÂN 14Dx1D", -49),
+            // new Topics("PHÉP NHÂN 15Dx1D", -50),
+
             storage_result = results;
-
-
-
 
             self.hard("bài này khá dễ");
 
             self.image_loading("img/img" + generateRandomInteger(1, 31) + ".gif");
 
+            console.log(results);
+
             for (var i = 0; i < results.numbers.length; i++) {
                 self.number_temp.push((results.numbers[i] > 0 ? "+" : "") + results.numbers[i]);
+                self.number_temp_all.push((results.numbers[i] > 0 ? "+" : "") + results.numbers[i]);
             }
 
             if (self.level().value < -1) {
@@ -712,15 +1050,34 @@ $(document).ready(function () {
             clearInterval(status_tien_trinh)
 
             if (self.level().value < -1) { // ly thuyet anh ban nho
-                tinhtientrinh(6, 5000);
+                tinhtientrinh(6, 3000);
                 soudStart = setTimeout(function () {
                     readtts(self.hard() + ', Các bạn hãy tập trung nào', true);
                 }, 400);
-                startTick = setTimeout(function () {
-                    self.isLoading(false);
-                    self.tick();
-                    tinhtientrinh(0, self.timer() * 1000 * self.number_temp().length + 4000);
-                }, 5000);
+                // startTick = setTimeout(function () {
+
+                // }, 5000);
+
+                $("#countdown").show();
+                $("#countdown").countdown360({
+                    radius: 150,
+                    seconds: 3,
+                    strokeWidth: 15,
+                    label: ['', ''],
+                    fillStyle: 'black',
+                    strokeStyle: '#003F87',
+                    fontSize: 150,
+                    fontColor: 'white',
+                    autostart: false,
+                    smooth: true,
+                    onComplete: function () {
+                        // $("#countdown").hide();
+                        self.isLoading(false);
+                        self.tick();
+                        tinhtientrinh(0, self.timer() * 1000 * self.number_temp().length + 4000);
+                    }
+                }).start()
+
 
             } else {
                 if (self.stepbystep()) {
@@ -728,20 +1085,58 @@ $(document).ready(function () {
                     soudStart = setTimeout(function () {
                         readtts('Các bạn hãy tập trung nào', true);
                     }, 10);
-                    setTimeout(function () {
-                        self.isLoading(false);
-                        self.tick();
-                    }, 2000)
+
+                    $("#countdown").show();
+                    $("#countdown").countdown360({
+                        radius: 150,
+                        seconds: 3,
+                        strokeWidth: 15,
+                        label: ['', ''],
+                        fillStyle: 'black',
+                        strokeStyle: '#003F87',
+                        fontSize: 150,
+                        fontColor: 'white',
+                        autostart: false,
+                        smooth: true,
+                        onComplete: function () {
+                            self.isLoading(false);
+                            self.tick();
+                        }
+                    }).start()
+
+
                 } else {
-                    tinhtientrinh(6, 5000);
+                    tinhtientrinh(6, 3000);
                     soudStart = setTimeout(function () {
                         readtts(self.hard() + ', Các bạn hãy tập trung nào', true);
                     }, 400);
+
+                    $("#countdown").show();
+                    
+                    $("#countdown").countdown360({
+                        radius: 150,
+                        seconds: 3,
+                        strokeWidth: 15,
+                        label: ['', ''],
+                        fillStyle: 'black',
+                        strokeStyle: '#003F87',
+                        fontSize: 150,
+                        fontColor: 'white',
+                        autostart: false,
+                        smooth: true,
+                        onComplete: function () {
+                            // $("#countdown").hide();
+                            console.log('completed');
+                            self.isLoading(false);
+                            self.tick();
+                            interval_timer = setInterval(self.tick, self.timer() * 1000);
+                            tinhtientrinh(0, self.timer() * 1000 * self.number_temp().length + 4000);
+                        }
+                    }).start()
+
+
                     startTick = setTimeout(function () {
-                        self.isLoading(false);
-                        self.tick();
-                        interval_timer = setInterval(self.tick, self.timer() * 1000);
-                        tinhtientrinh(0, self.timer() * 1000 * self.number_temp().length + 4000);
+
 
                     }, 5000);
                 }
@@ -801,31 +1196,33 @@ $(document).ready(function () {
 
 
 
-        var length = 5;
+        var length = 12;
         var index = 0;
 
         var excersize = true;
         var ketqua = [];
-        
+
         for (var i = 0; i < 0; i++) {
-            result = randSorobanABLKH_ABN_CONG2(5);
+            result = randSorobanlevelN(11, 50, 99, -99, 99, false);
+
+            console.log(result);
 
             if ((result.numbers.length) == length) {
                 var str = "" + (index + 1);
                 var pad = "000"
-                
+
                 if (excersize) {
                     var ans = pad.substring(0, pad.length - str.length) + str
-                    var template = "<div>" + (ans) + "." + result.numbers.join(" ") + " = ................................. </div>"
+                    var template = "<div><u>(" + (ans) + ")</u>. " + result.numbers.join(" ") + " = ...................... </div>"
                     if (index % 2 == 0) {
-                        template = "<div><b><i>" + (ans) + "." + result.numbers.join(" ") + " = </i></b> ................................. </div>"
+                        template = "<div><b><i><u>(" + (ans) + ")</u>. " + result.numbers.join(" ") + " = </i></b> ...................... </div>"
                     }
                     ketqua[index] = result.s;
                     index++;
                 } else {
                     var ans = pad.substring(0, pad.length - str.length) + str
                     var template = "<div>" + (ans) + "." + result.numbers.join(" ") + " </div>"
-                    if(index%2 == 0){
+                    if (index % 2 == 0) {
                         template = "<div><b><i><u>" + (ans) + "." + result.numbers.join(" ") + " = " + result.s + "</u></i></b></div>"
                     }
                     index++;

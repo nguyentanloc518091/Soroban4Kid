@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
         <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
+        <script src="https://unpkg.com/typewriter-effect@latest/dist/core.js"></script>
 
         <link rel="stylesheet" href="js/jquery.flipcounter.css" />
         <script src="js/jquery.flipcounter.js"></script>
@@ -18,28 +19,73 @@
         <script src="phep_chia.js"></script>
         <script src="js/level2.js"></script>
         <script src="js/jquery.fireworks.js"></script>
+
+        <script src="js/jquery.countdown360.js"></script>
+        
         <script src="index.js"></script>
         <script>
             function playAudio(){
-                const audio = document.querySelector("audio");
+                const audio = document.getElementById("audio1");
                 audio.volume = 1;
                 audio.play();
             }
+
+            function playAudio2(){
+                const audio = document.getElementById("audio2");
+                audio.volume = 1;
+                audio.play();
+            }
+
+            $(document).ready(function () {
+
+                
+            })
 
 
         </script>
         
     </head>
     <body>
-        <audio src="audio/tick.mp3"></audio>
+        <!-- <table>
+            <tr><td>Key:</td><td id="key"></td></tr>
+            <tr><td>Key Code:</td><td id="keyCode"></td></tr>
+            <tr><td>Event Code:</td><td id="eventCode"></td></tr>
+        </table> -->
+        <!-- <div class="layout_numpad">
+            <div class="ui-grid-a">
+                <input class="ui-block-a" type="label" value="0" style="width: 100%">
+            </div>
+            <div class="ui-grid-b">
+                <div class="ui-block-a">1</div>
+                <div class="ui-block-b">2</div>
+                <div class="ui-block-c">3</div>
+            </div>
+            <div class="ui-grid-b">
+                <div class="ui-block-a">4</div>
+                <div class="ui-block-b">5</div>
+                <div class="ui-block-c">6</div>
+            </div>
+            <div class="ui-grid-b">
+                <div class="ui-block-a">7</div>
+                <div class="ui-block-b">8</div>
+                <div class="ui-block-c">9</div>
+            </div>
+            <fieldset class="ui-grid-a">
+                <div class="ui-block-a"><button type="submit" data-theme="c">Cancel</button></div>
+                <div class="ui-block-b"><button type="submit" data-theme="b">Submit</button></div>	   
+            </fieldset>
+        </div> -->
+
+        <audio id="audio1" src="audio/tick.mp3"></audio>
+        <audio id="audio2" src="audio/ting2.mp3"></audio>
         <div class="result"></div>
         
         <div class="ui-grid-solo" data-bind="css: { 'show' : isSetting(), 'hide' : !isSetting()}">
             <div class="ui-grid-a">
-                    <label for="slider-1">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer"  step=".02" min="0" max="10" value="3" data-bind="value: timer"/>
+                    <label for="slider-1">Khoảng thời gian giữa các số:</label><input type="range" name="timer" id="timer"  step=".01" min="0" max="5" value="2" data-bind="value: timer"/>
             </div>
             <div class="ui-grid-a">
-                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="2" max="100" value="10" data-bind="value: numberrange, valueUpdate: 'input'"/>
+                    <label for="slider-2">Số sorabn tối đa:</label><input type="range" name="numberrange" id="numberrange" min="1" max="50" value="10" data-bind="value: numberrange, valueUpdate: 'input'"/>
             </div>
 
             <div class="ui-grid-a">
@@ -71,14 +117,22 @@
                         <input type="checkbox" name="checkbox-0 " data-bind="checked: mute" >âm thanh
                     </label>
                 </div>
-                <div class="ui-block-a">
+                <div class="ui-block-b">
                     <label>
                         <input type="checkbox" name="checkbox-0 " data-bind="checked: mute2" >âm thanh 2
                     </label>
                 </div>
+            </div>
+            <div  class="ui-grid-d">
+                
+                <div class="ui-block-a">
+                    <label>
+                        <input type="checkbox" id="checkbox-0-Guest">Guest all
+                    </label>
+                </div>
                 <div  class="ui-block-b">
                     <label>
-                        <input type="checkbox" name="checkbox-2 " id="cblevel" class="cblevel"  data-bind="checked: stepbystep" > Từng Bước
+                        <input type="checkbox" name="checkbox-2 " id="cblevel" class="cblevel" data-bind="checked: stepbystep" > Từng Bước
                     </label>
                 </div>
                 <div  class="ui-block-c">
@@ -116,84 +170,105 @@
                 <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" aria-valuenow="0" data-bind="style: {'width': percent() + '%'}" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
             <!-- /ko -->
-            <div class="ui-grid-d" style="position: fixed;width: 100%;z-index: 99999;" >
+            <div class="ui-grid-d" style="width: 100%;z-index: 99999;" >
                 <div class="ui-block-a">
-                    <button class="ui-btn" class="OK" data-bind="click:onViewBack ">Quay về</button>
+                    <button class="ui-btn" style="background: black;border: black;" class="OK" data-bind="click:onViewBack ">Quay về</button>
                 </div>
                 <div class="ui-block-b">
-                    <button class="ui-btn" class="OK" data-bind="click:onViewResult ">Reset</button>
+                    <button class="ui-btn" style="background: black;border: black;"  class="OK" data-bind="click:onViewResult ">Reset</button>
                 </div>
                 <div class="ui-block-c">
-                    <button class="ui-btn" class="OK" data-bind="click: onClickHideGuideFingerMath">Hướng dẫn FingerMath</button>
+                    <button class="ui-btn" style="background: black;border: black;"  class="OK" data-bind="click: onClickHideGuideFingerMath">Hướng dẫn FingerMath</button>
                 </div>
                 
                 <div class="ui-block-d">
-                    <button class="ui-btn" class="OK" data-bind="click: onClickHideGuideSoroban">Hướng dẫn Soroban</button>
+                    <button class="ui-btn" style="background: black;border: black;"  class="OK" data-bind="click: onClickHideGuideSoroban">Hướng dẫn Soroban</button>
                 </div>
 
                 <div class="ui-block-e">
-                    <button class="ui-btn" class="OK" data-bind="click: onClickHideGuideHistory">Hướng dẫn History</button>
+                    <button class="ui-btn" style="background: black;border: black;"  class="OK" data-bind="click: onClickHideGuideHistory">Hướng dẫn History</button>
                 </div>
             </div>
             
-            <div class="ui-grid-a" style="position: fixed;top: 18px;left: 14px; z-index: 2;">
+            <!-- <div class="ui-grid-a" style="position: fixed;top: 18px;left: 14px; z-index: 2;">
                 <h5 style="font-size: 27px;" data-bind="text: sentence() + '/' + numberrange()"></h5>
-            </div>
+            </div> -->
 
             <!-- ko if: isLoading() -->
             <div class="loading">
-                <img style="padding-top: 65px;max-height: 300px;min-height: 150px;" data-bind="attr: {'src': image_loading}"/>
+                <!-- <img style="padding-top: 65px;max-height: 300px;min-height: 150px;" data-bind="attr: {'src': image_loading}"/> -->
+                <div id="countdown" style="margin: 81px auto;"></div>
             </div>
             
             <!-- /ko -->
             <!-- ko if: !isLoading() && level().value < -1 -->
             <div class="notloading" style="padding-top: 98px;">
                 <div class="ui-grid-a">
-                    <h1  data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll" id="value3" style="font-size: 157px;"></h1>
+                    
+                    <h1  data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll" id="value3" style="font-size: 50px;"></h1>
+
+                    
                 </div>
             </div>
             <!-- /ko -->
             <!-- ko if: !isLoading() && level().value > -1 -->
             <div class="notloading" style="padding-top: 98px;">
-                <div class="ui-grid-a">
-                    <h1 class="ui-block-b"  id="value3" style="width: 62% !important;" data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: soroban, click: onResultAll"></h1>
+                <div class="ui-grid-a" style="width: 80%;">
+                    <!-- ko if: isShowAll() -->
+                        <div data-bind="foreach: number_temp_all, click: onResultAll">
+                            <span data-bind="text: $data, style: { 'background-color': $root.index_number_temp_all() == $index() ? 'red' : 'blue', 'color': $index() < $root.index_number_temp_all()  ? '#FF0000' : 'white' }" 
+                                style="background-color: blue;border-radius: 16px;padding: 1px 4px;font-size: 20px;color: white;margin: 4px 2px;float: left;font-weight: bold;;">
+                            </span>
+                        </div>
+                        
+                    <!-- /ko -->
+                </div>
+                    <!-- ko if: !isShowAll() -->
+                        <h1 class="ui-block-b"  id="value3" style="width: 62% !important;font-size: 80px;" data-bind="css: { 'red' : isLastNumber()}, style: {'color': colorText}, text: replaceABC(soroban), click: onResultAll"></h1>
+                    <!-- /ko -->
                     <!-- ko if: !isUseSoroban() -->
                         <div class="ui-block-b" data-bind="style : { visibility : backgroundblack() === true ? 'visible' : 'hidden' }, click: onClickHideGuideFingerMath" style="text-align: center;">
                             <img data-bind="attr: { src: handleft() }" style="height: 264px;" />
                             <img data-bind="attr: { src: handright() }"  style="height: 264px;" />
                             <!-- ko if: isUseHistory() -->
-                                <div style="font-size: 40px;color: red;" data-bind="text: history"></div>
+                                <!-- <div style="font-size: 40px;color: red;" data-bind="text: history"></div> -->
                             <!-- /ko -->
                         </div>
                     <!-- /ko -->
                     <!-- ko if: isUseSoroban() -->
-                        <div class="ui-block-b" style="width: 32% !important;"  data-bind="style : { visibility : backgroundblack() === true ? 'visible' : 'hidden' }, click: onClickHideGuideSoroban" style="text-align: center;">
-                            <img data-bind="attr: { src: abacusCol4() }" style="height: 250px;" /> 
-                            <img data-bind="attr: { src: abacusCol3() }" style="height: 250px;" /> 
-                            <img data-bind="attr: { src: abacusCol2() }" style="height: 250px;" />
-                            <img data-bind="attr: { src: abacusCol1() }" style="height: 250px;" />
+                        <div class="ui-block-b" style="width: 35% !important;"  data-bind="style : { visibility : backgroundblack() === true ? 'visible' : 'hidden' }, click: onClickHideGuideSoroban" style="text-align: center;">
+                            <!-- <img data-bind="attr: { src: abacusCol7() }" style="height: 100px;" />  -->
+                            <!-- <img data-bind="attr: { src: abacusCol6() }" style="height: 100px;" /> -->
+                            <!-- <img data-bind="attr: { src: abacusCol5() }" style="height: 100px;" />  --> 
+                            <img data-bind="attr: { src: abacusCol4() }" style="height: 100px;" /> 
+                            <img data-bind="attr: { src: abacusCol3() }" style="height: 100px;" /> 
+                            <img data-bind="attr: { src: abacusCol2() }" style="height: 100px;" />
+                            <img data-bind="attr: { src: abacusCol1() }" style="height: 100px;" />
                             <!-- ko if: isUseHistory() -->  
-                                <div style="font-size: 40px;color: red;" data-bind="text: history"></div>
+                                <!-- <div style="font-size: 40px;color: red;" data-bind="text: history"></div> -->
                             <!-- /ko -->
                         </div>
                     <!-- /ko -->
 
-                </div>
-                <!-- ko if: isUseHistory() --> 
-                <div class="guide" style="text-align: center;font-size: 55px;font-weight: bold;">
+                
+                
+                
+                
+                
+            </div>
+            
+            <!-- /ko -->
+
+            <!-- ko if: isUseHistory() --> 
+                <!-- <div class="guide" style="text-align: center;font-size: 55px;font-weight: bold;">
                     <span class="taytrai"  data-bind="text: abacusCol2_GUIDE()"></span> ;
                     <span class="tayphai" data-bind="text: abacusCol1_GUIDE()" style="padding-left: 20px;color: red;"></span> ;
                     <span class="taytrai" data-bind="text: abacusCol3_GUIDE()" style="padding-left: 20px;color: black;"></span>
                     <span class="tayphai" data-bind="text: abacusCol4_GUIDE()" style="padding-left: 20px;color: black;"></span>
-                </div>
-                <!-- /ko -->
-                
-                <!-- ko if: isLastNumber() -->
-                
-                <!-- /ko -->
-                
-            </div>
+                </div> -->
+                <div style="font-size: 40px;color: red;position: fixed;bottom: 0px;width: 468px;right: 0px;" data-bind="text: history"></div>
             <!-- /ko -->
+
             
             <!-- ko if: isTimer() -->
             <div class="timer" style="padding: 20px;text-align: center;font-size: 60px;font-weight: bold;border: 1px solid;position: fixed;bottom: 0px;width: 100%;background-color: aqua;">
@@ -202,18 +277,48 @@
             </div>
             <!-- /ko -->
             
+           
+
         </div>
         
 
         <style>
+
+            @font-face {
+                font-family: 'Hipchick';
+                src: url('hipchick.regular.ttf');
+            }
+
+            @font-face {
+                font-family: 'Best_Stories';
+                src: url('Best_Stories.otf');
+            }
+
+            @font-face {
+                font-family: 'BettyLavea';
+                src: url('BettyLavea.ttf');
+            }
+
+            
+            .layout_numpad .ui-block-a,
+            .layout_numpad .ui-block-b,
+            .layout_numpad .ui-block-c{
+                text-align: center;
+                padding: 10px;
+                background: white;
+                border: 1px solid black;
+                /* margin: 1px; */
+            }
+
             body{
                 background-color: white !important;
+                font-family: 'BettyLavea';
                 /* color: white; */
             }
 
             [data-role='page']{
-                background-color:darkgray !important ;
-                /* color: white; */
+                background-color: black !important ;
+                color: #1be51b;
             }
 
             .show{
@@ -231,7 +336,7 @@
 
             h1.red{
                 /* font-size: 340px; */
-                font-weight: bold;
+                /* font-weight: bold; */
                 color: red !important;
                 margin-top: 48px;
             }

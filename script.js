@@ -1,6 +1,10 @@
 
 var audiotts = document.createElement('audio');
 
+function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+}
+
 //No easing
 function constant (duration, range, current) {
     return duration / range;
@@ -201,12 +205,17 @@ function readtts(sentence, mute, speakEnglish = false) {
 
         if (!!sentence) {
             // sentence = sentence.replace("- ", "-");
-            sentence = sentence.replace("- ", "trừ").replace("+ ", "cộng").replace("-", "trừ").replace("+", "cộng").replace(":", "chia");
+            
             console.error(sentence);
             if (speakEnglish) {
+                sentence = sentence.replace("- ", "-").replace("+ ", "+").replace("-", "-").replace("+", "+").replace(":", ":");
                 audiotts.src = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=' + sentence;
             } else {
+                sentence = sentence.replace("- ", "trừ").replace("+ ", "cộng").replace("-", "trừ").replace("+", "cộng").replace(":", "chia");
                 sentence = sentence.replace("- ", "-").replace("+", "cộng ");
+
+                // sentence = sentence.toString().split('');
+
                 audiotts.src = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=vi-VN&client=tw-ob&q=' + sentence;
             }
 
@@ -1292,6 +1301,59 @@ function randSorobanlevel2B_(numb) {
     }
 }
 
+// chua làm
+function randSorobanlevel2C_(numb) {
+    var s = 0;
+    var numbers = [];
+    var rands = [];
+    var limit = 9;
+    var i = 0;
+    var overi = 0;
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+    while (true && i < numb && overi < 500000) {
+
+        var s1 = s % 10;
+        var number = generateRandomInteger(-9, 9);
+
+        var s2 = Math.floor((s / 10) % 10);
+        var number2 = generateRandomInteger(-9, 9);
+
+        // if(number != 0 && number2 != 0){
+        // if((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))){
+        //     if(checkNumberSorobanLevel1(s1, number) && checkNumberSorobanLevel1(s2, number2)){
+        //         s += number * 10 + number2;
+        //         numbers[i] =  (i != 0 ? (number > 0? " + ": " - "): " ") + Math.abs(s) + " (" + number + "" + number2 + ")";
+        //         i++;
+        //     }
+        // }
+
+        if ((0 < s1 + number && s1 + number < limit) && (0 < s2 + number2 && s2 + number2 < limit) && ((number > 0 && number2 > 0) || (number < 0 && number2 < 0))) {
+            // if(checkABN(s1, number) && checkABN(s2, number2)){
+            lt1[i] = lythuyet(s1, number);
+            lt2[i] = lythuyet(s2, number2);
+            s += (number2 * 10 + number);
+            numbers[i] = getNumberFromABS(i, (number2 * 10 + number), enable_word);
+            i++;
+            // }
+        }
+        // }
+        overi++;
+    }
+
+    console.log(numbers)
+    return {
+        numbers: numbers,
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
+    }
+}
+
 function randSorobanlevel2B_phai(numb) {
     var s = 0;
     var numbers = [];
@@ -1475,7 +1537,7 @@ function randSorobanlevel3B(numb, observer) {
     }
 }
 
-function randSorobanlevelN(numb, a, b, c, d) {
+function randSorobanlevelN(numb, a, b, c, d, fingermath = false) {
     var s = 0;
     var numbers = [];
     var rands = [];
@@ -1493,12 +1555,65 @@ function randSorobanlevelN(numb, a, b, c, d) {
     while (true && i < numb && overi < 500000) {
 
         var number2 = generateRandomInteger(c, d);
-        if(s + number2 >= 0){
-            s += (number2 );
-            i++;
-            numbers[i] = getNumberFromABS(i, (number2), enable_word);
-            
+        if(!fingermath){
+            if(s + number2 >= 0){
+                s += (number2 );
+                i++;
+                numbers[i] = getNumberFromABS(i, (number2), enable_word);
+                
+            }
+        }else {
+            if((s + number2 >= 0) && (s + number2 <= 99)){
+                s += (number2 );
+                i++;
+                numbers[i] = getNumberFromABS(i, formatNumber(number2), enable_word);
+                
+            }
         }
+        
+        
+        overi++;
+    }
+
+    console.log(numbers)
+    return {
+        numbers: numbers,
+        s: s,
+        lt1: lt1,
+        lt2: lt2,
+        lt3: lt3,
+        lt4: lt4
+    }
+}
+
+function randSorobanleve2N(numb, a, b, c, d, length = 2) {
+    var s = 0;
+    var numbers = [];
+    var rands = [];
+    var limit = 9;
+    var i = 0;
+    var overi = 0;
+
+    var lt1 = [];
+    var lt2 = [];
+    var lt3 = [];
+    var lt4 = [];
+
+    s = generateRandomInteger(a, b);
+    numbers[i] = s;
+    while (true && i < numb && overi < 500000) {
+
+        var number2 = generateRandomInteger(c, d);
+        if(number2 >= 0 && number2.toString().length == length){
+            if(s + number2 >= 0){
+                s += (number2 );
+                i++;
+                numbers[i] = getNumberFromABS(i, formatNumber(number2), enable_word);
+                
+            }
+        }
+        
+        
         
         overi++;
     }
@@ -1529,7 +1644,7 @@ function randSorobanlevel1B(numb) {
     var lt3 = [];
     var lt4 = [];
 
-    while (true && i < numb && overi < 500000) {
+    while (true && i < numb && overi < 5000) {
 
         var s1 = s % 10;
         var number = generateRandomInteger(-9, 9);
